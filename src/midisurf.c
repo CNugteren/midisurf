@@ -78,8 +78,8 @@ int main(void) {
 //--------------------------------------------------------------------------------------------------
 
 struct note_info {
-  int x; // x-position is based on the key of the note
-  int y; // y-position is based on the time of the note
+  short x; // x-position is based on the key of the note
+  short y; // y-position is based on the time of the note
   int channel;
   int key;
 };
@@ -87,6 +87,10 @@ struct note_info {
 void gameplay(const int end_time, const int num_tracks, struct instr** instructions) {
   printf("> Playing game (with %d tracks)\n", num_tracks);
   assert(num_tracks <= MAX_TRACKS);
+
+  // Keep track of the game's status
+  int score = 0;
+  int time = 0;
 
   // Display data: keeps track of the notes position as they fall down the (x, y) grid
   int i = 0;
@@ -106,10 +110,12 @@ void gameplay(const int end_time, const int num_tracks, struct instr** instructi
     instruction_indices[track_id] = 0;
     current_instructions[track_id] = instructions[track_id][0];
   }
-  clear_buffer();
 
-  // Time loop of the gameplay
-  int time = 0;
+  // Draws the initial static graphics
+  clear_buffer();
+  draw_static_graphics(DISPLAY_HEIGHT_START, DISPLAY_HEIGHT_END);
+
+  // Time loop of the game-play
   for (time = 0; time < end_time + HISTORY_LENGTH; ++time) {
 
     // Parse the instructions
@@ -122,7 +128,7 @@ void gameplay(const int end_time, const int num_tracks, struct instr** instructi
         if (num_notes + 1 == MAX_NOTES) { assert(0); }
         int new_note_index = (notes_start_index + num_notes) % MAX_NOTES;
         notes_data[new_note_index].x = DISPLAY_WIDTH_KEY * instruction.key + (DISPLAY_WIDTH_KEY / 2);
-        notes_data[new_note_index].y = DISPLAY_HEIGHT_ITEM / 2;
+        notes_data[new_note_index].y = DISPLAY_HEIGHT_START + DISPLAY_OBJECT_SIZE;
         notes_data[new_note_index].channel = track_id;
         notes_data[new_note_index].key = instruction.key;
         num_notes++;
@@ -157,7 +163,7 @@ void gameplay(const int end_time, const int num_tracks, struct instr** instructi
         draw_ball(notes_data[full_note_index].x, notes_data[full_note_index].y);
 
         // Play the sound at the bottom of the buffer
-        if (notes_data[full_note_index].y >= DISPLAY_HEIGHT - DISPLAY_HEIGHT_ITEM) {
+        if (notes_data[full_note_index].y >= DISPLAY_HEIGHT_END - DISPLAY_OBJECT_SIZE) {
           //printf("   [%8d] Key press %d\n", time, notes_data[full_note_index].key);
           key_press(notes_data[full_note_index].key, 50, notes_data[full_note_index].channel);
 
@@ -165,7 +171,20 @@ void gameplay(const int end_time, const int num_tracks, struct instr** instructi
           num_notes--;
           notes_start_index++;
           if (notes_start_index > MAX_NOTES) { notes_start_index = 0; }
+
+          // Updates the score on screen
+          char score_string[6];
+          sprintf(score_string, "%5d", score);
+          write_text(DISPLAY_NUMBER_POS, DISPLAY_HEIGHT_END_HALF, score_string);
         }
+      }
+
+      // Displays the current time and score in the top/bottom-right
+      const int time_update = (time % DISPLAY_TIME_UPDATE_FREQUENCY == 0);
+      if (time_update) {
+        char time_string[6];
+        sprintf(time_string, "%5d", time);
+        write_text(DISPLAY_NUMBER_POS, DISPLAY_HEIGHT_START_HALF, time_string);
       }
     }
 

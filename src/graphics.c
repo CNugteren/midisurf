@@ -33,8 +33,12 @@ void clear_buffer() {
   v_clrwk(handle);
 }
 
-void set_colour(const int value) {
+void set_colour(const short value) {
   vsf_color(handle, value);  // 0 == white, 1 == black
+}
+
+void write_text(const short x, const short y, const char* text) {
+  v_gtext(handle, x, y, text);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -68,6 +72,11 @@ void draw_ball(const short x, const short y) {
   draw_line(x - 3, y    , x + 2, y    );
   draw_line(x - 3, y + 1, x + 2, y + 1);
   draw_line(x - 2, y + 2, x + 1, y + 2);
+}
+
+void draw_static_graphics(const short bar_top_height, const short bar_bottom_height) {
+  draw_line(0, bar_top_height, DISPLAY_WIDTH, bar_top_height);
+  draw_line(0, bar_bottom_height, DISPLAY_WIDTH, bar_bottom_height);
 }
 
 //--------------------------------------------------------------------------------------------------
