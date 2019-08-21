@@ -2,8 +2,6 @@
 #ifndef _MIDISURF_H
 #define _MIDISURF_H
 
-#include "midi.h"
-
 //--------------------------------------------------------------------------------------------------
 
 #define MAX_TRACKS 3 // == number of channels supported on Atari ST
@@ -26,8 +24,11 @@
 #define DISPLAY_HEIGHT_ITEM (DISPLAY_HEIGHT / HISTORY_LENGTH)
 
 // Other
-#define DISPLAY_OBJECT_SIZE 4 // the max height and width of an object/note
+#define DISPLAY_OBJECT_SIZE 6 // the max height and width of an object/note
+#define DISPLAY_HALF_OBJECT_SIZE (DISPLAY_OBJECT_SIZE / 2)
 #define DISPLAY_NUMBER_POS (DISPLAY_WIDTH - 60) // x-position with location of the time/score
+#define SURFER_SPEED 7 // the x-movement every key press
+#define SURFER_TOLERANCE 8 // x-tolerance for both + and - of the surfer to hit a note to score
 
 //--------------------------------------------------------------------------------------------------
 

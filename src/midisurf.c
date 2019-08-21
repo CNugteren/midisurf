@@ -9,6 +9,7 @@
 #include "graphics.h"
 #include "midi.h"
 #include "midisurf.h"
+#include "io.h"
 
 //--------------------------------------------------------------------------------------------------
 
@@ -115,6 +116,11 @@ void gameplay(const int end_time, const int num_tracks, struct instr** instructi
   clear_buffer();
   draw_static_graphics(DISPLAY_HEIGHT_START, DISPLAY_HEIGHT_END);
 
+  // Display the surfer
+  int surfer_pos_x = DISPLAY_WIDTH / 2;
+  const int surfer_pos_y = DISPLAY_HEIGHT_END_HALF;
+  draw_surfer(surfer_pos_x, surfer_pos_y);
+
   // Time loop of the game-play
   for (time = 0; time < end_time + HISTORY_LENGTH; ++time) {
 
@@ -140,6 +146,31 @@ void gameplay(const int end_time, const int num_tracks, struct instr** instructi
 
     // Spend some time doing nothing to emulate the tempo of the music
     for (i = 0; i < 400; ++i) { }
+
+    // Listen for user input from the keyboard
+    if (key_pressed()) {
+      char key = get_key_value();
+
+      // Move right
+      if (key == '.') {
+        clear_box(surfer_pos_x - DISPLAY_HALF_OBJECT_SIZE, surfer_pos_y - DISPLAY_HALF_OBJECT_SIZE,
+            DISPLAY_OBJECT_SIZE, DISPLAY_OBJECT_SIZE);
+        if (surfer_pos_x < DISPLAY_NUMBER_POS - SURFER_SPEED) {
+          surfer_pos_x += SURFER_SPEED;
+        }
+        draw_surfer(surfer_pos_x, surfer_pos_y);
+      }
+
+      // Move left
+      else if (key == ',') {
+        clear_box(surfer_pos_x - DISPLAY_HALF_OBJECT_SIZE, surfer_pos_y - DISPLAY_HALF_OBJECT_SIZE,
+                  DISPLAY_OBJECT_SIZE, DISPLAY_OBJECT_SIZE);
+        if (surfer_pos_x > SURFER_SPEED) {
+          surfer_pos_x -= SURFER_SPEED;
+        }
+        draw_surfer(surfer_pos_x, surfer_pos_y);
+      }
+    }
 
     // Optionally only update the display every n-steps for better speed/smoothness
     const int display_update = (time % DISPLAY_UPDATE_FREQUENCY == 0);
@@ -172,10 +203,14 @@ void gameplay(const int end_time, const int num_tracks, struct instr** instructi
           notes_start_index++;
           if (notes_start_index > MAX_NOTES) { notes_start_index = 0; }
 
-          // Updates the score on screen
-          char score_string[6];
-          sprintf(score_string, "%5d", score);
-          write_text(DISPLAY_NUMBER_POS, DISPLAY_HEIGHT_END_HALF, score_string);
+          // Updates the score and displays it on screen
+          const int x_difference = abs(notes_data[full_note_index].x - surfer_pos_x);
+          if (x_difference < SURFER_TOLERANCE) {
+            score += 10;
+            char score_string[6];
+            sprintf(score_string, "%5d", score);
+            write_text(DISPLAY_NUMBER_POS, DISPLAY_HEIGHT_END_HALF, score_string);
+          }
         }
       }
 

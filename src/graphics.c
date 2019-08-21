@@ -79,4 +79,8 @@ void draw_static_graphics(const short bar_top_height, const short bar_bottom_hei
   draw_line(0, bar_bottom_height, DISPLAY_WIDTH, bar_bottom_height);
 }
 
+void draw_surfer(const int x, const int y) {
+  draw_ball(x, y);
+}
+
 //--------------------------------------------------------------------------------------------------
