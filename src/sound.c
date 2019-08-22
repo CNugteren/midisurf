@@ -24,20 +24,21 @@
 
 #define WRITE 0x80 // or with this register to write with Giaccess, otherwise it is a read
 
+__uint8_t register_7; // Bits 6 and 7 of register 7 are OS managed register values
+
 void enable_channel(const int channel) {
-  __uint8_t setting = Giaccess(0, 0x07);
-  // TODO: set the specific channel
-  Giaccess(0b11111000, 0x07 | WRITE);
-  Giaccess(0, 0x06 | WRITE);
+  register_7 &= (254 - channel - (channel == 2));
+  Giaccess(register_7, 0x07 | WRITE);
+  //Giaccess(0, 0x06 | WRITE);
 }
 
 void disable_channel(const int channel) {
-  // TODO: set the specific channel
-  Giaccess(0b11111111, 0x07 | WRITE);
+  register_7 |= (1 + channel + (channel == 2));
+  Giaccess(register_7, 0x07 | WRITE);
 }
 
+// Writes a 12-bit frequency value as period for a specific channel (X, Y, Z)
 void set_frequency(const __uint16_t frequency, const int channel) {
-  // Writes a 12-bit frequency value as period for a specific channel (X, Y, Z)
   const int register_index = (channel % 3) * 2; // registers (0,1), (2,3), or (4,5)
   Giaccess((62500 / frequency) & 0x00FF, register_index | WRITE); // first 8 bits of the frequency
   Giaccess(((62500 / frequency) >> 8) & 0x000F, (register_index + 1) | WRITE); // other 4 frequency bits
@@ -48,23 +49,33 @@ void set_volume(const __uint8_t volume, const int channel) {
   Giaccess(volume & 0x07, register_index | WRITE); // 3-bits only
 }
 
+//--------------------------------------------------------------------------------------------------
+
+// This function modifies the BIOS and needs to be run with 'Supexec'
+void disable_keyboard_bell()
+{
+  char *conterm;
+  conterm = (char *) 0x484L;
+  *conterm = *conterm & 0xFE; // turns of the bit to indicate that the keyboard should make no sound
+}
+
 void init_audio() {
-  enable_channel(0);
-  enable_channel(1);
-  enable_channel(2);
-  set_volume(0, 0);
-  set_volume(0, 1);
-  set_volume(0, 2);
+  Supexec(disable_keyboard_bell);
+  register_7 = Giaccess(0, 0x07);
+  int c = 0;
+  for (c = 0; c < 3; ++c) {
+    enable_channel(c);
+    set_volume(0, c);
+  }
   printf("> Audio initialized\n");
 }
 
 void stop_audio() {
-  set_volume(0, 0);
-  set_volume(0, 1);
-  set_volume(0, 2);
-  disable_channel(0);
-  disable_channel(1);
-  disable_channel(2);
+  int c = 0;
+  for (c = 0; c < 3; ++c) {
+    set_volume(0, c);
+    disable_channel(c);
+  }
 }
 
 //--------------------------------------------------------------------------------------------------

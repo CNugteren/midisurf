@@ -12,6 +12,7 @@
   #include <osbind.h>
 #else // UNIX
   #define Giaccess(a, b) (a) + (b) // Just something to make the syntax checker happy
+  #define Supexec(func)
 #endif
 
 //--------------------------------------------------------------------------------------------------
