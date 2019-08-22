@@ -53,14 +53,14 @@ int main(void) {
   }
 
   // Midi parsing of the tracks, resulting in instructions what notes to play
-  const int end_time = parse_tracks(tracks, header.tracks, instructions);
+  const struct midistats stats = parse_tracks(tracks, header.tracks, instructions);
 
   // Audio & graphics initialization
   init_audio();
   init_graphics();
 
   // Playing the game
-  gameplay(end_time, header.tracks, instructions);
+  gameplay(stats, header.tracks, instructions);
 
   // End of audio & graphics
   stop_audio();
@@ -85,7 +85,7 @@ struct note_info {
   int key;
 };
 
-void gameplay(const int end_time, const int num_tracks, struct instr** instructions) {
+void gameplay(const struct midistats stats, const int num_tracks, struct instr** instructions) {
   printf("> Playing game (with %d tracks)\n", num_tracks);
   assert(num_tracks <= MAX_TRACKS);
 
@@ -102,6 +102,7 @@ void gameplay(const int end_time, const int num_tracks, struct instr** instructi
     notes_data[i].x = 0;
     notes_data[i].y = 0;
   }
+  const int display_width_key = DISPLAY_WIDTH / (stats.max_key - stats.min_key);
 
   // Initialization of the other data-structures
   struct instr current_instructions[MAX_TRACKS];
@@ -122,7 +123,7 @@ void gameplay(const int end_time, const int num_tracks, struct instr** instructi
   draw_surfer(surfer_pos_x, surfer_pos_y);
 
   // Time loop of the game-play
-  for (time = 0; time < end_time + HISTORY_LENGTH; ++time) {
+  for (time = 0; time < stats.end_time + HISTORY_LENGTH; ++time) {
 
     // Parse the instructions
     for (track_id = 0; track_id < num_tracks; ++track_id) {
@@ -133,7 +134,8 @@ void gameplay(const int end_time, const int num_tracks, struct instr** instructi
         // Adds the new note to the list of notes currently on the screen
         if (num_notes + 1 == MAX_NOTES) { assert(0); }
         int new_note_index = (notes_start_index + num_notes) % MAX_NOTES;
-        notes_data[new_note_index].x = DISPLAY_WIDTH_KEY * instruction.key + (DISPLAY_WIDTH_KEY / 2);
+        notes_data[new_note_index].x = display_width_key * (instruction.key - stats.min_key) +
+                                       (display_width_key / 2);
         notes_data[new_note_index].y = DISPLAY_HEIGHT_START + DISPLAY_OBJECT_SIZE;
         notes_data[new_note_index].channel = track_id;
         notes_data[new_note_index].key = instruction.key;

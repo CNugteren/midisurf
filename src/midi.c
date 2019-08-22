@@ -144,7 +144,8 @@ struct track_chunk read_track_chunk(FILE* file) {
 
 //--------------------------------------------------------------------------------------------------
 
-int parse_tracks(const struct track_chunk* tracks, const int num_tracks, struct instr** instructions) {
+struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tracks,
+                              struct instr** instructions) {
   printf("> Parsing %d tracks:\n", num_tracks);
   int i = 0;
 
@@ -162,6 +163,9 @@ int parse_tracks(const struct track_chunk* tracks, const int num_tracks, struct 
     key_pressed[track_id] = -1;
     instruction_indices[track_id] = 0;
   }
+  struct midistats stats;
+  stats.min_key = 255;
+  stats.max_key = 0;
 
   // Time loop
   __uint16_t time = 0;
@@ -314,6 +318,8 @@ int parse_tracks(const struct track_chunk* tracks, const int num_tracks, struct 
           instructions[track_id][instruction_indices[track_id]].pressure = pressure_value;
           instruction_indices[track_id]++;
           key_pressed[track_id] = key_number;
+          if (key_number > stats.max_key) { stats.max_key = key_number; }
+          if (key_number < stats.min_key) { stats.min_key = key_number; }
         }
         else if (status_bits == 0b1011) {
           const __uint8_t controller = tracks[track_id].data[indices[track_id]++];
@@ -366,7 +372,8 @@ int parse_tracks(const struct track_chunk* tracks, const int num_tracks, struct 
   free(key_pressed);
   free(instruction_indices);
 
-  return time; // The time found at the end of the parsing
+  stats.end_time = time; // The time found at the end of the parsing
+  return stats;
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -45,7 +45,14 @@ struct instr {
   __uint8_t pressure;
 };
 
-int parse_tracks(const struct track_chunk* tracks, const int num_tracks, struct instr** instructions);
+struct midistats {
+  int end_time;
+  __uint8_t min_key;
+  __uint8_t max_key;
+};
+
+struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tracks,
+                              struct instr** instructions);
 
 //--------------------------------------------------------------------------------------------------
 #endif // _MIDI_H
