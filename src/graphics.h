@@ -59,7 +59,9 @@ void draw_ball(const short x, const short y);
 
 void draw_static_graphics(const short bar_top_height, const short bar_bottom_height);
 
-void draw_surfer(const int x, const int y);
+void draw_surfer(const short x, const short y);
+
+void draw_catch(const short x_ball, const short y_ball, const short x_surfer, const short y_surfer);
 
 //--------------------------------------------------------------------------------------------------
 #endif // _GRAPHICS_H

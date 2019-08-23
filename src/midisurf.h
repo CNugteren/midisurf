@@ -25,10 +25,11 @@
 
 // Other
 #define DISPLAY_OBJECT_SIZE 6 // the max height and width of an object/note
-#define DISPLAY_HALF_OBJECT_SIZE (DISPLAY_OBJECT_SIZE / 2)
+#define DISPLAY_SURFER_WIDTH 18 // the max width of the surfer
+#define DISPLAY_SURFER_HEIGHT 6 // the max width of the surfer
 #define DISPLAY_NUMBER_POS (DISPLAY_WIDTH - 60) // x-position with location of the time/score
-#define SURFER_SPEED 7 // the x-movement every key press
-#define SURFER_TOLERANCE 8 // x-tolerance for both + and - of the surfer to hit a note to score
+#define SURFER_SPEED 14 // the x-movement every key press
+#define SURFER_TOLERANCE 16 // x-tolerance for both + and - of the surfer to hit a note to score
 
 //--------------------------------------------------------------------------------------------------
 

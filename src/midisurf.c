@@ -155,8 +155,8 @@ void gameplay(const struct midistats stats, const int num_tracks, struct instr**
 
       // Move right
       if (key == '.') {
-        clear_box(surfer_pos_x - DISPLAY_HALF_OBJECT_SIZE, surfer_pos_y - DISPLAY_HALF_OBJECT_SIZE,
-            DISPLAY_OBJECT_SIZE, DISPLAY_OBJECT_SIZE);
+        clear_box(surfer_pos_x - (DISPLAY_SURFER_WIDTH / 2), surfer_pos_y - (DISPLAY_SURFER_HEIGHT / 2),
+                  DISPLAY_SURFER_WIDTH, DISPLAY_SURFER_HEIGHT);
         if (surfer_pos_x < DISPLAY_NUMBER_POS - SURFER_SPEED) {
           surfer_pos_x += SURFER_SPEED;
         }
@@ -165,8 +165,8 @@ void gameplay(const struct midistats stats, const int num_tracks, struct instr**
 
       // Move left
       else if (key == ',') {
-        clear_box(surfer_pos_x - DISPLAY_HALF_OBJECT_SIZE, surfer_pos_y - DISPLAY_HALF_OBJECT_SIZE,
-                  DISPLAY_OBJECT_SIZE, DISPLAY_OBJECT_SIZE);
+        clear_box(surfer_pos_x - (DISPLAY_SURFER_WIDTH / 2), surfer_pos_y - (DISPLAY_SURFER_HEIGHT / 2),
+                  DISPLAY_SURFER_WIDTH, DISPLAY_SURFER_HEIGHT);
         if (surfer_pos_x > SURFER_SPEED) {
           surfer_pos_x -= SURFER_SPEED;
         }
@@ -192,7 +192,9 @@ void gameplay(const struct midistats stats, const int num_tracks, struct instr**
         //       notes_data[full_note_index].x, notes_data[full_note_index].y);
 
         // Clear the graphics of the previous location of this note
-        clear_box(notes_data[full_note_index].x - 3, notes_data[full_note_index].y - 3, 8, 8);
+        clear_box(notes_data[full_note_index].x - (DISPLAY_OBJECT_SIZE / 2),
+                  notes_data[full_note_index].y - (DISPLAY_OBJECT_SIZE / 2),
+                  DISPLAY_OBJECT_SIZE, DISPLAY_OBJECT_SIZE);
 
         // Move the note one step down
         notes_data[full_note_index].y += DISPLAY_HEIGHT_ITEM * DISPLAY_UPDATE_FREQUENCY;
@@ -213,6 +215,8 @@ void gameplay(const struct midistats stats, const int num_tracks, struct instr**
           // Updates the score and displays it on screen
           const int x_difference = abs(notes_data[full_note_index].x - surfer_pos_x);
           if (x_difference < SURFER_TOLERANCE) {
+            draw_catch(notes_data[full_note_index].x, notes_data[full_note_index].y,
+                       surfer_pos_x, surfer_pos_y);
             score += 10;
             char score_string[6];
             sprintf(score_string, "%5d", score);

@@ -79,8 +79,15 @@ void draw_static_graphics(const short bar_top_height, const short bar_bottom_hei
   draw_line(0, bar_bottom_height, DISPLAY_WIDTH, bar_bottom_height);
 }
 
-void draw_surfer(const int x, const int y) {
-  draw_ball(x, y);
+void draw_surfer(const short x, const short y) {
+  draw_line(x - 6, y, x + 6, y);
+  draw_ball(x - 6, y);
+  draw_ball(x + 6, y);
+}
+
+void draw_catch(const short x_ball, const short y_ball, const short x_surfer, const short y_surfer) {
+  clear_box(x_ball - 3, y_ball - 3, 6, 6);
+  set_colour(1);
 }
 
 //--------------------------------------------------------------------------------------------------
