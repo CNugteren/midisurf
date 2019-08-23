@@ -172,6 +172,11 @@ void gameplay(const struct midistats stats, const int num_tracks, struct instr**
         }
         draw_surfer(surfer_pos_x, surfer_pos_y);
       }
+
+      // Exit the game
+      else if (key == '/') {
+        return;
+      }
     }
 
     // Optionally only update the display every n-steps for better speed/smoothness
