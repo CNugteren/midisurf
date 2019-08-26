@@ -8,9 +8,11 @@
 
 #ifndef UNIX // Atari ST
   #include <osbind.h>
+  #define FILE_SEPARATOR "\\"
 #else // UNIX
   #define Bconstat(x) 0
   #define Bconin(x) ' '
+  #define FILE_SEPARATOR "//"
 #endif
 
 //--------------------------------------------------------------------------------------------------

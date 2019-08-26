@@ -4,8 +4,19 @@
 
 #include "midi.h"
 
+#define DEBUG 0
+
+#ifndef UNIX // Atari ST
+  #define printf
+#endif
+
 //--------------------------------------------------------------------------------------------------
 
+// File name lengths
+#define MAX_PATH_LENGTH 60
+#define MAX_FILE_NAME_LENGTH 40
+
+// Global constants
 #define MAX_TRACKS 3 // == number of channels supported on Atari ST
 
 // Make sure the following 3 are a power of 2 for better speed

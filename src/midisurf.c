@@ -10,14 +10,37 @@
 #include "midi.h"
 #include "midisurf.h"
 #include "io.h"
+#include "menu.h"
 
 //--------------------------------------------------------------------------------------------------
 
 int main(void) {
+  appl_init();
+
+  // Sets the defaults for the file paths
+  char midi_file_path[MAX_PATH_LENGTH];
+  char midi_file_name[MAX_FILE_NAME_LENGTH];
+  sprintf(midi_file_path, "\\\\");
+  sprintf(midi_file_name, "*.MID");
+
+  // Handles the menu options
+  #if DEBUG == 0
+    const int do_exit_program = start_menu(midi_file_path, midi_file_name);
+    if (do_exit_program == 1) { return 0; }
+  #else
+    sprintf(midi_file_path, "C:\\\\testmidi");
+    sprintf(midi_file_name, "got.mid");
+  #endif
 
   // File opening
-  char* file_name = "testmidi/got.mid";
+  char file_name[MAX_PATH_LENGTH + MAX_FILE_NAME_LENGTH];
+  sprintf(file_name, "%s%s%s", midi_file_path, FILE_SEPARATOR, midi_file_name);
+  printf("Opening MIDI file: %s\n", file_name);
   FILE* file = open_file(file_name);
+  if (file < 0) {
+    printf("Could not open file: %s\n", file_name);
+    assert(0);
+  }
 
   // Header parsing
   struct header_chunk header = read_header_chunk(file);
@@ -72,7 +95,7 @@ int main(void) {
     free(tracks[track_id].data);
   }
   free(instructions);
-  printf("> All done\n");
+  appl_exit();
   return 0;
 }
 

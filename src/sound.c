@@ -67,7 +67,6 @@ void init_audio() {
     enable_channel(c);
     set_volume(0, c);
   }
-  printf("> Audio initialized\n");
 }
 
 void stop_audio() {

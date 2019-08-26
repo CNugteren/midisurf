@@ -43,9 +43,8 @@ void write_text(const short x, const short y, const char* text) {
 
 //--------------------------------------------------------------------------------------------------
 
-// Initializes the graphs system on the Atari ST, returning 57 properties of the system
+// Initializes the graphics system on the Atari ST, returning 57 properties of the system
 void init_graphics() {
-  appl_init();
   short settings_in[11];
   short properties_out[57];
   int i = 0;
@@ -54,13 +53,10 @@ void init_graphics() {
   }
   settings_in[10] = 2;
   v_opnvwk(settings_in, &handle, properties_out);
-  printf("> Graphics initialized\n");
 }
 
 void stop_graphics() {
-  appl_exit();
   clear_buffer();
-  //menu_bar(menubar, 0);
 }
 
 //--------------------------------------------------------------------------------------------------
