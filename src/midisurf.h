@@ -40,7 +40,8 @@
 
 //--------------------------------------------------------------------------------------------------
 
-void gameplay(const struct midistats stats, const int num_tracks, struct instr** instructions);
+// Plays the game and returns whether (1) or not (0) to stop
+int gameplay(const struct midistats stats, const int num_tracks, struct instr** instructions);
 
 //--------------------------------------------------------------------------------------------------
 #endif // _MIDISURF_H

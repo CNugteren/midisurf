@@ -23,54 +23,64 @@ int main(void) {
   sprintf(midi_file_path, "\\\\");
   sprintf(midi_file_name, "*.MID");
 
-  // Handles the menu options
-  #if DEBUG == 0
-    const int do_exit_program = start_menu(midi_file_path, midi_file_name);
-    if (do_exit_program == 1) { return 0; }
-  #else
+  // Loop until the game should exit
+  int do_exit_program = 0;
+  while (!do_exit_program) {
+
+    // Handles the menu options
+#if DEBUG == 0
+    do_exit_program = start_menu(midi_file_path, midi_file_name);
+    if (do_exit_program == 1) { break; }
+#else
     sprintf(midi_file_path, "C:\\\\testmidi");
     sprintf(midi_file_name, "got.mid");
-  #endif
+#endif
 
-  // File opening and reading
-  FILE* file = open_file(midi_file_path, midi_file_name);
-  struct header_chunk header = read_header_chunk(file);
-  struct track_chunk* tracks = read_tracks(file, header);
-  close_file(file);
+    // File opening and reading
+    FILE *file = open_file(midi_file_path, midi_file_name);
+    struct header_chunk header = read_header_chunk(file);
+    struct track_chunk *tracks = read_tracks(file, header);
+    close_file(file);
 
-  // The data: a list of key press instructions
-  short track_id = 0;
-  int pos = 0;
-  struct instr** instructions = (struct instr **) malloc(header.tracks * sizeof(struct instr*));
-  for (track_id = 0; track_id < header.tracks; ++track_id) {
-    instructions[track_id] = (struct instr *) malloc(tracks[track_id].length * sizeof(struct instr));
-    for (pos = 0; pos < tracks[track_id].length; ++pos) {
-      instructions[track_id][pos].time = -1;
-      instructions[track_id][pos].key = 0;
-      instructions[track_id][pos].pressure = 0;
+    // The data: a list of key press instructions
+    short track_id = 0;
+    int pos = 0;
+    struct instr **instructions = (struct instr **) malloc(header.tracks * sizeof(struct instr *));
+    for (track_id = 0; track_id < header.tracks; ++track_id) {
+      instructions[track_id] = (struct instr *) malloc(tracks[track_id].length * sizeof(struct instr));
+      for (pos = 0; pos < tracks[track_id].length; ++pos) {
+        instructions[track_id][pos].time = -1;
+        instructions[track_id][pos].key = 0;
+        instructions[track_id][pos].pressure = 0;
+      }
     }
+
+    // Midi parsing of the tracks, resulting in instructions what notes to play
+    const struct midistats stats = parse_tracks(tracks, header.tracks, instructions);
+
+    // Audio & graphics initialization
+    init_audio();
+    init_graphics();
+
+    // Playing the game
+    do_exit_program = gameplay(stats, header.tracks, instructions);
+
+    // End of audio & graphics
+    stop_audio();
+    stop_graphics();
+
+    // Clean-up
+    for (track_id = 0; track_id < header.tracks; ++track_id) {
+      free(instructions[track_id]);
+      free(tracks[track_id].data);
+    }
+    free(instructions);
+    #ifdef UNIX
+      do_exit_program = 1;
+    #endif
   }
 
-  // Midi parsing of the tracks, resulting in instructions what notes to play
-  const struct midistats stats = parse_tracks(tracks, header.tracks, instructions);
-
-  // Audio & graphics initialization
-  init_audio();
-  init_graphics();
-
-  // Playing the game
-  gameplay(stats, header.tracks, instructions);
-
-  // End of audio & graphics
-  stop_audio();
-  stop_graphics();
-
-  // Clean-up
-  for (track_id = 0; track_id < header.tracks; ++track_id) {
-    free(instructions[track_id]);
-    free(tracks[track_id].data);
-  }
-  free(instructions);
+  // End of the program
   appl_exit();
   return 0;
 }
@@ -84,7 +94,7 @@ struct note_info {
   int key;
 };
 
-void gameplay(const struct midistats stats, const int num_tracks, struct instr** instructions) {
+int gameplay(const struct midistats stats, const int num_tracks, struct instr** instructions) {
   printf("> Playing game (with %d tracks)\n", num_tracks);
   assert(num_tracks <= MAX_TRACKS);
 
@@ -174,7 +184,7 @@ void gameplay(const struct midistats stats, const int num_tracks, struct instr**
 
       // Exit the game
       else if (key == '/') {
-        return;
+        return 1;
       }
     }
 
@@ -237,6 +247,7 @@ void gameplay(const struct midistats stats, const int num_tracks, struct instr**
 
   // Clean-up
   free(instruction_indices);
+  return 0;
 }
 
 //--------------------------------------------------------------------------------------------------
