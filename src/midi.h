@@ -29,6 +29,8 @@ struct header_chunk read_header_chunk(FILE* file);
 
 struct track_chunk read_track_chunk(FILE* file);
 
+struct track_chunk* read_tracks(FILE* file, struct header_chunk header);
+
 //--------------------------------------------------------------------------------------------------
 
 // Encodes when to play a note

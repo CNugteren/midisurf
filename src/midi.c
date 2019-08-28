@@ -102,6 +102,15 @@ struct header_chunk read_header_chunk(FILE* file) {
     chunk.frames_per_second = ((division_value >> 8) & 0x7F);
     chunk.ticks_per_frame = division_value & 0x00FF;
   }
+
+  printf("> Opened MIDI track of format '%d' with %d track(s) and division_type '%d': ",
+         chunk.format, chunk.tracks, chunk.division_type);
+  if (chunk.division_type == 0) {
+    printf("%d ticks per quarter note\n", chunk.ticks_per_quarter_note);
+  }
+  else {
+    printf("%d fps and %d ticks per frame\n", chunk.frames_per_second, chunk.ticks_per_frame);
+  }
   return chunk;
 }
 
@@ -129,6 +138,18 @@ struct track_chunk read_track_chunk(FILE* file) {
   if (fread(chunk.data, chunk.length, 1, file) != 1) { printf("Error reading data\n"); assert(0); }
   printf("length %d\n", chunk.length);
   return chunk;
+}
+
+// Calls the above function multiple times, once for each track
+struct track_chunk* read_tracks(FILE* file, struct header_chunk header) {
+  struct track_chunk* tracks = (struct track_chunk*) malloc(header.tracks * sizeof(struct track_chunk));
+  int track_id = 0;
+  for (track_id = 0; track_id < header.tracks; ++track_id) {
+    printf("> Reading track %d - ", track_id);
+    struct track_chunk track = read_track_chunk(file);
+    tracks[track_id] = track;
+  }
+  return tracks;
 }
 
 //--------------------------------------------------------------------------------------------------

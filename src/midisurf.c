@@ -32,32 +32,14 @@ int main(void) {
     sprintf(midi_file_name, "got.mid");
   #endif
 
-  // File opening
-  printf("Opening MIDI file: %s\n", midi_file_name);
+  // File opening and reading
   FILE* file = open_file(midi_file_path, midi_file_name);
-
-  // Header parsing
   struct header_chunk header = read_header_chunk(file);
-  printf("> Opened MIDI track '%s' of format '%d' with %d track(s) and division_type '%d': ",
-         midi_file_name, header.format, header.tracks, header.division_type);
-  if (header.division_type == 0) {
-    printf("%d ticks per quarter note\n", header.ticks_per_quarter_note);
-  }
-  else {
-    printf("%d fps and %d ticks per frame\n", header.frames_per_second, header.ticks_per_frame);
-  }
-
-  // Loops over each of the tracks
-  struct track_chunk* tracks = (struct track_chunk*) malloc(header.tracks * sizeof(struct track_chunk));
-  int track_id = 0;
-  for (track_id = 0; track_id < header.tracks; ++track_id) {
-    printf("> Reading track %d - ", track_id);
-    struct track_chunk track = read_track_chunk(file);
-    tracks[track_id] = track;
-  }
+  struct track_chunk* tracks = read_tracks(file, header);
   close_file(file);
 
-  // The result: a list of key press instructions
+  // The data: a list of key press instructions
+  short track_id = 0;
   int pos = 0;
   struct instr** instructions = (struct instr **) malloc(header.tracks * sizeof(struct instr*));
   for (track_id = 0; track_id < header.tracks; ++track_id) {

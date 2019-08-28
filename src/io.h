@@ -15,6 +15,7 @@
 #ifndef UNIX // Atari ST
   #include <osbind.h>
   #define FILE_SEPARATOR "\\"
+  #define printf
 #else // UNIX
   #define Bconstat(x) 0
   #define Bconin(x) ' '
