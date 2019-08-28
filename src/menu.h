@@ -14,8 +14,8 @@
   #define rsrc_free()
   #define OBJECT void
   #define menu_bar(a, b)
-  #define form_alert(a, b) printf(b); printf("\n")
-  #define evnt_mesag(a) a[0] = 10; a[4] = LOAD
+  #define form_alert(a, b) printf(b)
+  #define evnt_mesag(a) a[0] = 10; a[4] = LOADMIDI
   #define menu_tnormal(a, b, c) printf("> Menu normal: %d\n", b)
   #define graf_mouse(a, b) printf("> Mouse type: %d\n", a)
   #define fsel_input(a, b, c) sprintf(a, "testmidi"); sprintf(b, "got.mid"); *c = 1

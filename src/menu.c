@@ -33,7 +33,7 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
   }
 
   // Displays the menu-bar
-  rsrc_gaddr(0, MENUS, &menubar);
+  rsrc_gaddr(0, MAINMENU, &menubar);
   menu_bar(menubar, 1);
 
   short message[8];
@@ -48,10 +48,10 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
       const short button = message[4];
 
       // Determines the action taken based on the button pressed
-      if (button == MIDISURF) {
+      if (button == GAME) {
         // Nothing to do, this is a menu with sub-items
       }
-      else if (button == LOAD) {
+      else if (button == LOADMIDI) {
         form_alert(1, "[1][ Next, please specify the | location of the MIDI file | "
                       "to play the game with.][OK]");
         short file_button = 0;
@@ -61,13 +61,12 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
           do_exit_menu = 1; // exit menu, start the game with the specified file
         }
       }
-      // TODO: Add quit button
-      //else if (button == QUIT) {
-      //  if (form_alert(2, "[2][Are you sure you want to quit the program?][Yes|No]") == 1) {
-      //    do_exit_menu = 1;
-      //    do_exit_program = 1;
-      //  }
-      //}
+      else if (button == QUIT) {
+        if (form_alert(2, "[2][Are you sure you want to quit the program?][Yes|No]") == 1) {
+          do_exit_menu = 1;
+          do_exit_program = 1;
+        }
+      }
       menu_tnormal(menubar, title, 1);
     }
   }
