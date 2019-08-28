@@ -15,17 +15,6 @@
 #endif
 
 //--------------------------------------------------------------------------------------------------
-// File I/O
-
-FILE* open_file(char *filename) {
-  return fopen(filename, "rb");
-}
-
-void close_file(FILE* file_handle) {
-  fclose(file_handle);
-}
-
-//--------------------------------------------------------------------------------------------------
 
 int find_length_of_vlq(const __uint8_t* buffer) {
   int index = 0;

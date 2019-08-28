@@ -33,19 +33,13 @@ int main(void) {
   #endif
 
   // File opening
-  char file_name[MAX_PATH_LENGTH + MAX_FILE_NAME_LENGTH];
-  sprintf(file_name, "%s%s%s", midi_file_path, FILE_SEPARATOR, midi_file_name);
-  printf("Opening MIDI file: %s\n", file_name);
-  FILE* file = open_file(file_name);
-  if (file < 0) {
-    printf("Could not open file: %s\n", file_name);
-    assert(0);
-  }
+  printf("Opening MIDI file: %s\n", midi_file_name);
+  FILE* file = open_file(midi_file_path, midi_file_name);
 
   // Header parsing
   struct header_chunk header = read_header_chunk(file);
   printf("> Opened MIDI track '%s' of format '%d' with %d track(s) and division_type '%d': ",
-         file_name, header.format, header.tracks, header.division_type);
+         midi_file_name, header.format, header.tracks, header.division_type);
   if (header.division_type == 0) {
     printf("%d ticks per quarter note\n", header.ticks_per_quarter_note);
   }

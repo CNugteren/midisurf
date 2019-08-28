@@ -12,10 +12,6 @@
 
 //--------------------------------------------------------------------------------------------------
 
-// File name lengths
-#define MAX_PATH_LENGTH 60
-#define MAX_FILE_NAME_LENGTH 40
-
 // Global constants
 #define MAX_TRACKS 3 // == number of channels supported on Atari ST
 
