@@ -6,6 +6,7 @@
 #include "sound.h"
 #include "midi.h"
 #include "midisurf.h"
+#include "io.h"
 
 // Debugging print statements
 #ifndef UNIX // ATARI ST
@@ -70,29 +71,29 @@ struct header_chunk read_header_chunk(FILE* file) {
   struct header_chunk chunk;
 
   // Midi chunk type (ascii)
-  if (fread(&chunk.type, 4, 1, file) != 1) { printf("Error reading chunk type\n"); assert(0); }
+  if (fread(&chunk.type, 4, 1, file) != 1) { error("Error reading chunk type"); }
   chunk.type[4] = '\0';
   int is_header = strcmp(chunk.type, "MThd");
   if (is_header != 0) {
     printf("Unexpected chunk type: %s\n", chunk.type);
-    assert(0);
+    error("Unexpected chunk type");
   }
 
   // Data length (32 bits, msb first)
   __uint8_t buffer[4];
-  if (fread(&buffer, 4, 1, file) != 1) { printf("Error reading data length\n"); assert(0); }
+  if (fread(&buffer, 4, 1, file) != 1) { error("Error reading data length"); }
   chunk.length = buffer[3] + 10 * (buffer[2] + 10 * (buffer[1] + 10 * buffer[0]));
   if (chunk.length != 6) {
     printf("Expected header chunk size of 6, got: %d\n", chunk.length);
-    assert(0);
+    error("Unexpected header chunk size");
   }
 
   // The actual header data
-  if (fread(&buffer, 2, 1, file) != 1) { printf("Error reading header data #0\n"); assert(0); }
+  if (fread(&buffer, 2, 1, file) != 1) { error("Error reading header data #0"); }
   chunk.format = buffer[1] + 10 * buffer[0];
-  if (fread(&buffer, 2, 1, file) != 1) { printf("Error reading header data #1\n"); assert(0); }
+  if (fread(&buffer, 2, 1, file) != 1) { error("Error reading header data #1"); }
   chunk.tracks = buffer[1] + 10 * buffer[0];
-  if (fread(&buffer, 2, 1, file) != 1) { printf("Error reading header data #2\n"); assert(0); }
+  if (fread(&buffer, 2, 1, file) != 1) { error("Error reading header data #2"); }
   __uint16_t division_value = buffer[1] + 10 * buffer[0];
   chunk.division_type = division_value >> 15;  // bit 15
   if (chunk.division_type == 0) {
@@ -120,22 +121,22 @@ struct track_chunk read_track_chunk(FILE* file) {
   struct track_chunk chunk;
 
   // Midi chunk type (ascii)
-  if (fread(&chunk.type, 4, 1, file) != 1) { printf("Error reading chunk type\n"); assert(0); }
+  if (fread(&chunk.type, 4, 1, file) != 1) { error("Error reading chunk type"); }
   chunk.type[4] = '\0';
   int is_track = strcmp(chunk.type, "MTrk");
   if (is_track != 0) {
     printf("Unexpected chunk type: %s\n", chunk.type);
-    assert(0);
+    error("Unexpected chunk type");
   }
 
   // Data length (32 bits, msb first)
   __uint8_t buffer[4];
-  if (fread(&buffer, 4, 1, file) != 1) { printf("Error reading data length\n"); assert(0); }
+  if (fread(&buffer, 4, 1, file) != 1) { error("Error reading data length"); }
   chunk.length = buffer[3] + (256 * buffer[2] + (256 * buffer[1] + (256 * buffer[0])));
 
   // The actual data
   chunk.data = (__uint8_t*) malloc(chunk.length);
-  if (fread(chunk.data, chunk.length, 1, file) != 1) { printf("Error reading data\n"); assert(0); }
+  if (fread(chunk.data, chunk.length, 1, file) != 1) { error("Error reading data"); }
   printf("length %d\n", chunk.length);
   return chunk;
 }
@@ -274,7 +275,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
         // Unknown meta-event
         else {
           printf("Error, unsupported meta-event of type %#04x\n", meta_type);
-          assert(0);
+          error("Error, unsupported meta-event");
         }
         print_debug("\n");
       }
@@ -288,21 +289,18 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
           printf("%d ", value);
         }
         printf("\n");
-        printf("Error, unsupported event\n");
-        assert(0);
+        error("Error, unsupported event");
       }
 
       // Special sys-event
       else if (event_id == 0xF7) {
         printf("Special sys-event\n");
-        printf("Error, unsupported event\n");
-        assert(0); // not supported
+        error("Error, unsupported event");
       }
 
       // Unknown event
       else if ((event_id & 0xF0) == 0xF0) { // any other event starting with 0xF
-        printf("Error, found a unknown event type\n");
-        assert(0);
+        error("Error, found a unknown event type");
       }
 
       // Regular channel event
@@ -352,13 +350,13 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
         }
         else {
           printf("Error, unsupported status %d\n", status_bits);
-          assert(0); // not supported
+          error("Error, unsupported status");
         }
       }
 
       if (indices[track_id] > tracks[track_id].length) {
         printf("Error, track parser went beyond the length of %d at %d\n", tracks[track_id].length, indices[track_id]);
-        assert(0);
+        error("Error, track parser went beyond the expected length");
       }
 
     } // end of track for-loop

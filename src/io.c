@@ -35,3 +35,16 @@ char get_key_value() {
 }
 
 //--------------------------------------------------------------------------------------------------
+
+void error(char * string) {
+  #ifndef UNIX // Atari ST
+    char error_string[100];
+    sprintf(error_string, "[1][%s][Exit]", string);
+    form_alert(1, error_string);
+  #else // UNIX
+    printf("%s\n", string);
+    assert(0);
+  #endif
+}
+
+//--------------------------------------------------------------------------------------------------
