@@ -201,8 +201,8 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
         const __uint8_t meta_type = tracks[track_id].data[indices[track_id]++];
         print_debug("Meta-event %#04x - ", meta_type);
 
-        // Ascii meta-events (0x1 till 0x7): just print the data and continue
-        if (meta_type >= 1 && meta_type <= 7) {
+        // Ascii meta-events (0x1 till 0x9): just print the data and continue
+        if (meta_type >= 1 && meta_type <= 0xa) {
           const int meta_length = parse_vlq_value(tracks[track_id].data, &indices[track_id]);
           print_ascii_type(meta_type);
           parse_ascii_values(tracks[track_id].data, &indices[track_id], meta_length);
@@ -369,7 +369,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
         break;
       }
     }
-
+    if (time == 65536 - 1) { break; }
     time++;
   } // end of time while-loop
 
