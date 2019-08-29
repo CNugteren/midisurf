@@ -16,6 +16,7 @@
 
 int main(void) {
   appl_init();
+  init_graphics();
 
   // Sets the defaults for the file paths
   char midi_file_path[MAX_PATH_LENGTH];
@@ -58,16 +59,10 @@ int main(void) {
     // Midi parsing of the tracks, resulting in instructions what notes to play
     const struct midistats stats = parse_tracks(tracks, header.tracks, instructions);
 
-    // Audio & graphics initialization
-    init_audio();
-    init_graphics();
-
     // Playing the game
+    init_audio();
     do_exit_program = gameplay(stats, header.tracks, instructions);
-
-    // End of audio & graphics
     stop_audio();
-    stop_graphics();
 
     // Clean-up
     for (track_id = 0; track_id < header.tracks; ++track_id) {
@@ -81,6 +76,7 @@ int main(void) {
   }
 
   // End of the program
+  stop_graphics();
   appl_exit();
   return 0;
 }
@@ -247,6 +243,7 @@ int gameplay(const struct midistats stats, const int num_tracks, struct instr** 
 
   // Clean-up
   free(instruction_indices);
+  clear_buffer();
   return 0;
 }
 

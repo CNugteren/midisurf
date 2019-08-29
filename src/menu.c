@@ -36,6 +36,18 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
   rsrc_gaddr(0, MAINMENU, &menubar);
   menu_bar(menubar, 1);
 
+  // Displays the textual game instructions
+  OBJECT* bg_text;
+  rsrc_gaddr(0, TEXT, &bg_text);
+  form_center(bg_text, NULL, NULL, NULL, NULL);
+  objc_draw(bg_text, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+
+  // Displays the logo
+  OBJECT* dragon;
+  rsrc_gaddr(0, DRAGON, &dragon);
+  object_set_offset(dragon, 410, 145);
+  objc_draw(dragon, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+
   short message[8];
   int do_exit_program = 0;
   int do_exit_menu = 0;
@@ -62,7 +74,8 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
         }
       }
       else if (button == QUIT) {
-        if (form_alert(2, "[2][Are you sure you want to quit the program?][Yes|No]") == 1) {
+        if (form_alert(2, "[2][ Are you sure you want to | "
+                          "quit the program?][Yes|No]") == 1) {
           do_exit_menu = 1;
           do_exit_program = 1;
         }
