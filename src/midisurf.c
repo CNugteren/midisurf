@@ -61,8 +61,12 @@ int main(void) {
 
     // Playing the game
     init_audio();
-    do_exit_program = gameplay(stats, header.tracks, instructions);
+    struct game_result result = gameplay(stats, header.tracks, instructions);
+    do_exit_program = result.exit;
     stop_audio();
+
+    // Present the score
+    display_score(result);
 
     // Clean-up
     for (track_id = 0; track_id < header.tracks; ++track_id) {
@@ -90,13 +94,16 @@ struct note_info {
   int key;
 };
 
-int gameplay(const struct midistats stats, const int num_tracks, struct instr** instructions) {
+struct game_result gameplay(const struct midistats stats, const int num_tracks,
+                            struct instr** instructions) {
   printf("> Playing game (with %d tracks)\n", num_tracks);
   assert(num_tracks <= MAX_TRACKS);
 
   // Keep track of the game's status
-  int score = 0;
-  int time = 0;
+  struct game_result result;
+  result.score = 0;
+  result.time = 0;
+  result.exit = 0;
 
   // Display data: keeps track of the notes position as they fall down the (x, y) grid
   int i = 0;
@@ -128,12 +135,12 @@ int gameplay(const struct midistats stats, const int num_tracks, struct instr** 
   draw_surfer(surfer_pos_x, surfer_pos_y);
 
   // Time loop of the game-play
-  for (time = 0; time < stats.end_time + HISTORY_LENGTH; ++time) {
+  for (result.time = 0; result.time < stats.end_time + HISTORY_LENGTH; ++result.time) {
 
     // Parse the instructions
     for (track_id = 0; track_id < num_tracks; ++track_id) {
       const struct instr instruction = current_instructions[track_id];
-      if (instruction.time != -1 && instruction.time < time) {
+      if (instruction.time != -1 && instruction.time < result.time) {
         instruction_indices[track_id]++;
 
         // Adds the new note to the list of notes currently on the screen
@@ -180,12 +187,13 @@ int gameplay(const struct midistats stats, const int num_tracks, struct instr** 
 
       // Exit the game
       else if (key == '/') {
-        return 1;
+        result.exit = 1;
+        return result;
       }
     }
 
     // Optionally only update the display every n-steps for better speed/smoothness
-    const int display_update = (time % DISPLAY_UPDATE_FREQUENCY == 0);
+    const int display_update = (result.time % DISPLAY_UPDATE_FREQUENCY == 0);
     if (display_update) {
 
       // Loops over all the notes currently on screen
@@ -222,19 +230,19 @@ int gameplay(const struct midistats stats, const int num_tracks, struct instr** 
           if (x_difference < SURFER_TOLERANCE) {
             draw_catch(notes_data[full_note_index].x, notes_data[full_note_index].y,
                        surfer_pos_x, surfer_pos_y);
-            score += 10;
+            result.score += 10;
             char score_string[6];
-            sprintf(score_string, "%5d", score);
+            sprintf(score_string, "%5d", result.score);
             write_text(DISPLAY_NUMBER_POS, DISPLAY_HEIGHT_END_HALF, score_string);
           }
         }
       }
 
       // Displays the current time and score in the top/bottom-right
-      const int time_update = (time % DISPLAY_TIME_UPDATE_FREQUENCY == 0);
+      const int time_update = (result.time % DISPLAY_TIME_UPDATE_FREQUENCY == 0);
       if (time_update) {
         char time_string[6];
-        sprintf(time_string, "%5d", time);
+        sprintf(time_string, "%5d", result.time);
         write_text(DISPLAY_NUMBER_POS, DISPLAY_HEIGHT_START_HALF, time_string);
       }
     }
@@ -244,7 +252,16 @@ int gameplay(const struct midistats stats, const int num_tracks, struct instr** 
   // Clean-up
   free(instruction_indices);
   clear_buffer();
-  return 0;
+  return result;
+}
+
+//--------------------------------------------------------------------------------------------------
+
+void display_score(const struct game_result result) {
+  char string[61 + 8 + 8];
+  sprintf(string, "[1][ Scored %d points after | playing for %d beats][Hurray!]",
+          result.score, result.time);
+  form_alert(1, string);
 }
 
 //--------------------------------------------------------------------------------------------------

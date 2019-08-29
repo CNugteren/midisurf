@@ -40,8 +40,17 @@
 
 //--------------------------------------------------------------------------------------------------
 
+struct game_result {
+  int score;
+  int time;
+  int exit; // boolean whether or not to exit the program
+};
+
 // Plays the game and returns whether (1) or not (0) to stop
-int gameplay(const struct midistats stats, const int num_tracks, struct instr** instructions);
+struct game_result gameplay(const struct midistats stats, const int num_tracks,
+                            struct instr** instructions);
+
+void display_score(const struct game_result result);
 
 //--------------------------------------------------------------------------------------------------
 #endif // _MIDISURF_H
