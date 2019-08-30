@@ -33,7 +33,11 @@ int main(void) {
     do_exit_program = start_menu(midi_file_path, midi_file_name);
     if (do_exit_program == 1) { break; }
 #else
-    sprintf(midi_file_path, "C:\\\\testmidi");
+    #ifndef UNIX // Atari ST
+      sprintf(midi_file_path, "C:\\\\testmidi");
+    #else
+      sprintf(midi_file_path, "testmidi");
+    #endif
     sprintf(midi_file_name, "got.mid");
 #endif
 
