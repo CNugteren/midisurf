@@ -13,6 +13,7 @@
 //--------------------------------------------------------------------------------------------------
 
 // Global constants
+#define NUM_SURFERS 2
 #define MAX_TRACKS 3 // == number of channels supported on Atari ST
 
 // Make sure the following 3 are a power of 2 for better speed
@@ -23,9 +24,9 @@
 
 // Start of the game-play, above/below is the menu with the scores and such
 #define DISPLAY_HEIGHT_START 40
-#define DISPLAY_HEIGHT_END (DISPLAY_HEIGHT - 40)
+#define DISPLAY_HEIGHT_END (DISPLAY_HEIGHT - 60)
 #define DISPLAY_HEIGHT_START_HALF (DISPLAY_HEIGHT_START / 2)
-#define DISPLAY_HEIGHT_END_HALF (DISPLAY_HEIGHT - 20)
+#define DISPLAY_SURFER(id) (DISPLAY_HEIGHT - 20 - 20 * id)
 
 // Determines the resolution of the display grid based on the resolution of the screen
 #define DISPLAY_HEIGHT_ITEM (DISPLAY_HEIGHT / HISTORY_LENGTH)
@@ -41,14 +42,17 @@
 //--------------------------------------------------------------------------------------------------
 
 struct game_result {
-  int score;
+  int scores[NUM_SURFERS];
   int time;
-  int exit; // boolean whether or not to exit the program
+  short exit; // boolean whether or not to exit the program
 };
 
 // Plays the game and returns whether (1) or not (0) to stop
 struct game_result gameplay(const struct midistats stats, const int num_tracks,
                             struct instr** instructions);
+
+void move_surfer_left(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y);
+void move_surfer_right(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y);
 
 void display_score(const struct game_result result);
 

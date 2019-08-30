@@ -105,9 +105,12 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
 
   // Keep track of the game's status
   struct game_result result;
-  result.score = 0;
   result.time = 0;
   result.exit = 0;
+  short surfer_id = 0;
+  for (surfer_id = 0; surfer_id < NUM_SURFERS; ++surfer_id) {
+    result.scores[surfer_id] = 0;
+  }
 
   // Display data: keeps track of the notes position as they fall down the (x, y) grid
   int i = 0;
@@ -133,10 +136,14 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
   clear_buffer();
   draw_static_graphics(DISPLAY_HEIGHT_START, DISPLAY_HEIGHT_END);
 
-  // Display the surfer
-  int surfer_pos_x = DISPLAY_WIDTH / 2;
-  const int surfer_pos_y = DISPLAY_HEIGHT_END_HALF;
-  draw_surfer(surfer_pos_x, surfer_pos_y);
+  // Display the surfers
+  short surfer_pos_x[NUM_SURFERS];
+  short surfer_pos_y[NUM_SURFERS];
+  for (surfer_id = 0; surfer_id < NUM_SURFERS; ++surfer_id) {
+    surfer_pos_x[surfer_id] = DISPLAY_WIDTH / 2;
+    surfer_pos_y[surfer_id] = DISPLAY_SURFER(surfer_id);
+    draw_surfer(surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
+  }
 
   // Time loop of the game-play
   for (result.time = 0; result.time < stats.end_time + HISTORY_LENGTH; ++result.time) {
@@ -169,24 +176,20 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
     if (key_pressed()) {
       char key = get_key_value();
 
-      // Move right
+      // Move surfer 0
       if (key == '.') {
-        clear_box(surfer_pos_x - (DISPLAY_SURFER_WIDTH / 2), surfer_pos_y - (DISPLAY_SURFER_HEIGHT / 2),
-                  DISPLAY_SURFER_WIDTH, DISPLAY_SURFER_HEIGHT);
-        if (surfer_pos_x < DISPLAY_NUMBER_POS - SURFER_SPEED) {
-          surfer_pos_x += SURFER_SPEED;
-        }
-        draw_surfer(surfer_pos_x, surfer_pos_y);
+        move_surfer_right(0, surfer_pos_x, surfer_pos_y);
+      }
+      else if (key == ',') {
+        move_surfer_left(0, surfer_pos_x, surfer_pos_y);
       }
 
-      // Move left
-      else if (key == ',') {
-        clear_box(surfer_pos_x - (DISPLAY_SURFER_WIDTH / 2), surfer_pos_y - (DISPLAY_SURFER_HEIGHT / 2),
-                  DISPLAY_SURFER_WIDTH, DISPLAY_SURFER_HEIGHT);
-        if (surfer_pos_x > SURFER_SPEED) {
-          surfer_pos_x -= SURFER_SPEED;
-        }
-        draw_surfer(surfer_pos_x, surfer_pos_y);
+      // Move surfer 1
+      if (key == 'c') {
+        move_surfer_right(1, surfer_pos_x, surfer_pos_y);
+      }
+      else if (key == 'x') {
+        move_surfer_left(1, surfer_pos_x, surfer_pos_y);
       }
 
       // Exit the game
@@ -230,14 +233,16 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
           if (notes_start_index > MAX_NOTES) { notes_start_index = 0; }
 
           // Updates the score and displays it on screen
-          const int x_difference = abs(notes_data[full_note_index].x - surfer_pos_x);
-          if (x_difference < SURFER_TOLERANCE) {
-            draw_catch(notes_data[full_note_index].x, notes_data[full_note_index].y,
-                       surfer_pos_x, surfer_pos_y);
-            result.score += 10;
-            char score_string[6];
-            sprintf(score_string, "%5d", result.score);
-            write_text(DISPLAY_NUMBER_POS, DISPLAY_HEIGHT_END_HALF, score_string);
+          for (surfer_id = 0; surfer_id < NUM_SURFERS; ++surfer_id) {
+            const int x_difference = abs(notes_data[full_note_index].x - surfer_pos_x[surfer_id]);
+            if (x_difference < SURFER_TOLERANCE) {
+              draw_catch(notes_data[full_note_index].x, notes_data[full_note_index].y,
+                         surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
+              result.scores[surfer_id] += 10;
+              char score_string[6];
+              sprintf(score_string, "%5d", result.scores[surfer_id]);
+              write_text(DISPLAY_NUMBER_POS, DISPLAY_SURFER(surfer_id), score_string);
+            }
           }
         }
       }
@@ -261,10 +266,33 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
 
 //--------------------------------------------------------------------------------------------------
 
+void move_surfer_left(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y) {
+  clear_box(surfer_pos_x[surfer_id] - (DISPLAY_SURFER_WIDTH / 2),
+            surfer_pos_y[surfer_id] - (DISPLAY_SURFER_HEIGHT / 2),
+            DISPLAY_SURFER_WIDTH, DISPLAY_SURFER_HEIGHT);
+  if (surfer_pos_x[surfer_id] > SURFER_SPEED) {
+    surfer_pos_x[surfer_id] -= SURFER_SPEED;
+  }
+  draw_surfer(surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
+}
+
+void move_surfer_right(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y) {
+  clear_box(surfer_pos_x[surfer_id] - (DISPLAY_SURFER_WIDTH / 2),
+            surfer_pos_y[surfer_id] - (DISPLAY_SURFER_HEIGHT / 2),
+            DISPLAY_SURFER_WIDTH, DISPLAY_SURFER_HEIGHT);
+  if (surfer_pos_x[surfer_id] < DISPLAY_NUMBER_POS - SURFER_SPEED) {
+    surfer_pos_x[surfer_id] += SURFER_SPEED;
+  }
+  draw_surfer(surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
+}
+
+//--------------------------------------------------------------------------------------------------
+
 void display_score(const struct game_result result) {
-  char string[61 + 8 + 8];
-  sprintf(string, "[1][ Scored %d points after | playing for %d beats][Hurray!]",
-          result.score, result.time);
+  char string[80 + 8 + 8 + 8];
+  sprintf(string, "[1][ Kalessin scored %d points | Orm Embar scored %d points | "
+                  "after %d beats][Hurray!]",
+          result.scores[0], result.scores[1], result.time);
   form_alert(1, string);
 }
 
