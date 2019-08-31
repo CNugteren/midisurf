@@ -193,7 +193,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
       }
 
       // Exit the game
-      else if (key == '/') {
+      else if (key == 27) { // 27 == ESCAPE
         result.exit = 1;
         return result;
       }

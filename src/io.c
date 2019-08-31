@@ -41,6 +41,7 @@ void error(char * string) {
     char error_string[100];
     sprintf(error_string, "[1][%s][Exit]", string);
     form_alert(1, error_string);
+    shutdown(0);
   #else // UNIX
     printf("%s\n", string);
     assert(0);

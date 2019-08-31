@@ -18,7 +18,9 @@
   #define menu_bar(a, b)
   #define form_alert(a, b) printf(b)
   #define form_center(a, b, c, d, e) a = b
+  #define form_do(a, b) LOADMIDI
   #define objc_draw(a, b, c, d, e, f, g) a = NULL
+  #define objc_change(a, b, c, d, e, f, g, h, i) a = NULL
   #define object_set_offset(a, b, c) a = NULL
   #define evnt_mesag(a) a[0] = 10; a[4] = LOADMIDI
   #define menu_tnormal(a, b, c) printf("> Menu normal: %d\n", b)

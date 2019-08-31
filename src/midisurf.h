@@ -7,7 +7,7 @@
 #define DEBUG 0
 
 #ifndef UNIX // Atari ST
-  #define printf
+  //#define printf
 #endif
 
 //--------------------------------------------------------------------------------------------------
