@@ -1,6 +1,7 @@
 //--------------------------------------------------------------------------------------------------
 
 #include "menu.h"
+#include "bitmap.h"
 #include "graphics.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -23,6 +24,7 @@ void remove_asterisks(char *file_path) {
 
 int start_menu(char *midi_file_path, char *midi_file_name) {
   graf_mouse(ARROW, NULL);
+  clear_buffer();
 
   // Loads the resources (RSC file) for the start menu (edit with MMRCP.PRG)
   if (rsrc_load("MENUBAR.RSC") == 0) {
@@ -60,6 +62,7 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
         do_exit_menu = 1; // exit menu, start the game with the specified file
       }
       objc_draw(bg_text, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+      objc_draw(dragon, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
       objc_change(bg_text, LOADMIDI, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0x0, 1);
     }
     else if (button == QUIT) {

@@ -24,7 +24,9 @@
 
 //--------------------------------------------------------------------------------------------------
 
-FILE* open_file(char* midi_file_path, char* midi_file_name);
+FILE* open_midi_file(const char* midi_file_path, const char* midi_file_name);
+
+FILE* open_file(const char* file_name);
 
 void close_file(FILE* file_handle);
 
