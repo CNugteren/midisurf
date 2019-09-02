@@ -81,7 +81,7 @@ struct header_chunk read_header_chunk(FILE* file) {
 
   // Data length (32 bits, msb first)
   __uint8_t buffer[4];
-  if (fread(&buffer, 4, 1, file) != 1) { error("Error reading data length"); }
+  if (fread(buffer, 4, 1, file) != 1) { error("Error reading data length"); }
   chunk.length = buffer[3] + 10 * (buffer[2] + 10 * (buffer[1] + 10 * buffer[0]));
   if (chunk.length != 6) {
     printf("Expected header chunk size of 6, got: %d\n", chunk.length);
@@ -89,11 +89,11 @@ struct header_chunk read_header_chunk(FILE* file) {
   }
 
   // The actual header data
-  if (fread(&buffer, 2, 1, file) != 1) { error("Error reading header data #0"); }
+  if (fread(buffer, 2, 1, file) != 1) { error("Error reading header data #0"); }
   chunk.format = buffer[1] + 10 * buffer[0];
-  if (fread(&buffer, 2, 1, file) != 1) { error("Error reading header data #1"); }
+  if (fread(buffer, 2, 1, file) != 1) { error("Error reading header data #1"); }
   chunk.tracks = buffer[1] + 10 * buffer[0];
-  if (fread(&buffer, 2, 1, file) != 1) { error("Error reading header data #2"); }
+  if (fread(buffer, 2, 1, file) != 1) { error("Error reading header data #2"); }
   __uint16_t division_value = buffer[1] + 10 * buffer[0];
   chunk.division_type = division_value >> 15;  // bit 15
   if (chunk.division_type == 0) {
@@ -131,7 +131,7 @@ struct track_chunk read_track_chunk(FILE* file) {
 
   // Data length (32 bits, msb first)
   __uint8_t buffer[4];
-  if (fread(&buffer, 4, 1, file) != 1) { error("Error reading data length"); }
+  if (fread(buffer, 4, 1, file) != 1) { error("Error reading data length"); }
   chunk.length = buffer[3] + (256 * buffer[2] + (256 * buffer[1] + (256 * buffer[0])));
 
   // The actual data
