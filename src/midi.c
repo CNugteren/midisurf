@@ -166,6 +166,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
   int* complete = (int *) malloc(num_tracks * sizeof(int));
   int* key_pressed = (int *) malloc(num_tracks * sizeof(int));
   int* instruction_indices = (int *) malloc(num_tracks * sizeof(int));
+  int* progress = (int *) malloc(num_tracks * sizeof(int));
   int track_id = 0;
   for (track_id = 0; track_id < num_tracks; ++track_id) {
     times[track_id] = 0;
@@ -173,6 +174,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
     complete[track_id] = 0;
     key_pressed[track_id] = -1;
     instruction_indices[track_id] = 0;
+    progress[track_id] = 0;
   }
   struct midistats stats;
   stats.min_key = 255;
@@ -193,7 +195,8 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
 
       indices[track_id] += length_of_vlq;
       times[track_id] += delta_time;
-      print_debug("   [%8d][%8d][%3d] Event: ", time, times[track_id], track_id);
+      print_debug("   [%8d][%8d][%3d][%3d%%] Event: ",
+                  time, times[track_id], track_id, progress[track_id]);
       const __uint8_t event_id = tracks[track_id].data[indices[track_id]++];
 
       // Meta-event
@@ -358,6 +361,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
         printf("Error, track parser went beyond the length of %d at %d\n", tracks[track_id].length, indices[track_id]);
         error("Error, track parser went beyond the expected length");
       }
+      progress[track_id] = (indices[track_id] * 100) / tracks[track_id].length;
 
     } // end of track for-loop
 
