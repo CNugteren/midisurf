@@ -6,6 +6,7 @@
 #include "sound.h"
 #include "midi.h"
 #include "midisurf.h"
+#include "graphics.h"
 #include "io.h"
 
 // Debugging print statements
@@ -158,7 +159,10 @@ struct track_chunk* read_tracks(FILE* file, struct header_chunk header) {
 struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tracks,
                               struct instr** instructions) {
   printf("> Parsing %d tracks:\n", num_tracks);
-  int i = 0;
+
+  // Graphics in the background
+  clear_buffer();
+  draw_parsing_background(tracks, num_tracks);
 
   // Initialization
   int* times = (int *) malloc(num_tracks * sizeof(int));
@@ -181,6 +185,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
   stats.max_key = 0;
 
   // Time loop
+  int i = 0;
   __uint16_t time = 0;
   int all_tracks_done = 0;
   while (all_tracks_done != 1) {
@@ -207,6 +212,9 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
         // Ascii meta-events (0x1 till 0x9): just print the data and continue
         if (meta_type >= 1 && meta_type <= 0xa) {
           const int meta_length = parse_vlq_value(tracks[track_id].data, &indices[track_id]);
+          if (meta_type == 0x03) {
+            draw_track_name(track_id, &tracks[track_id].data[indices[track_id]], meta_length);
+          }
           print_ascii_type(meta_type);
           parse_ascii_values(tracks[track_id].data, &indices[track_id], meta_length);
         }
@@ -362,7 +370,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
         error("Error, track parser went beyond the expected length");
       }
       progress[track_id] = (indices[track_id] * 100) / tracks[track_id].length;
-
+      draw_progress_bar(progress[track_id], track_id);
     } // end of track for-loop
 
     // End condition
@@ -386,6 +394,41 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
 
   stats.end_time = time; // The time found at the end of the parsing
   return stats;
+}
+
+//--------------------------------------------------------------------------------------------------
+
+void draw_parsing_background(const struct track_chunk* tracks, const short num_tracks) {
+  write_text(DISPLAY_PROGRESS_X_TEXT, 30, "Parsing tracks...");
+  const short percentage_y =  DISPLAY_PROGRESS_Y_OFFSET - 5;
+  write_text(DISPLAY_PROGRESS_X_OFFSET - 3, percentage_y, "0%");
+  write_text(DISPLAY_PROGRESS_X_OFFSET + 44 * DISPLAY_PROGRESS_SPEED, percentage_y, "50%");
+  write_text(DISPLAY_PROGRESS_X_OFFSET + 88 * DISPLAY_PROGRESS_SPEED, percentage_y, "100%");
+  short track_id = 0;
+  for (track_id = 0; track_id < num_tracks; ++track_id) {
+    const short track_length = tracks[track_id].length;
+    char track_info_string[17 + 2 + 5];
+    sprintf(track_info_string, "Track #%02hd (length %hd)", track_id, track_length);
+    const short y_pos = track_id * DISPLAY_PROGRESS_Y_STEP + DISPLAY_PROGRESS_Y_OFFSET + 13;
+    write_text(DISPLAY_PROGRESS_X_TEXT, y_pos, track_info_string);
+  }
+}
+
+void draw_track_name(const short track_id, const __uint8_t* name, const short length) {
+  char track_name_string[18]; // Max length of the printed name
+  track_name_string[0] = '"';
+  int i = 0;
+  for (i = 0; i < length && i <= 18 - 3; ++i) { track_name_string[i + 1] = name[i]; }
+  track_name_string[i + 1] = '"';
+  track_name_string[i + 2] = '\0';
+  const short y_pos = track_id * DISPLAY_PROGRESS_Y_STEP + DISPLAY_PROGRESS_Y_OFFSET + 13;
+  write_text(DISPLAY_PROGRESS_X_NAME, y_pos, track_name_string);
+}
+
+void draw_progress_bar(const short progress_percentage, const short track_id) {
+  const short y_pos = track_id * DISPLAY_PROGRESS_Y_STEP + DISPLAY_PROGRESS_Y_OFFSET;
+  draw_box(DISPLAY_PROGRESS_X_OFFSET, y_pos, DISPLAY_PROGRESS_X_OFFSET + DISPLAY_PROGRESS_SPEED *
+           progress_percentage, y_pos + DISPLAY_PROGRESS_HEIGHT, 1);
 }
 
 //--------------------------------------------------------------------------------------------------
