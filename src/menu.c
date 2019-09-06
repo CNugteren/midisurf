@@ -32,17 +32,17 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
     return 1;
   }
 
+  // Displays the background bitmap
+  OBJECT* background = (OBJECT*) malloc(1 * sizeof(OBJECT));
+  background[0] = load_bitmap("background.pbm");
+  object_set_offset(background, 0, 0);
+  objc_draw(background, 0, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+
   // Displays the textual game instructions
   OBJECT* bg_text;
   rsrc_gaddr(0, TEXT, &bg_text);
-  form_center(bg_text, NULL, NULL, NULL, NULL);
+  object_set_offset(bg_text, 20, 100);
   objc_draw(bg_text, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-
-  // Displays the logo
-  OBJECT* dragon;
-  rsrc_gaddr(0, DRAGON, &dragon);
-  object_set_offset(dragon, 410, 90);
-  objc_draw(dragon, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
   int do_exit_program = 0;
   int do_exit_menu = 0;
@@ -62,7 +62,6 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
         do_exit_menu = 1; // exit menu, start the game with the specified file
       }
       objc_draw(bg_text, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-      objc_draw(dragon, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
       objc_change(bg_text, LOADMIDI, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0x0, 1);
     }
     else if (button == QUIT) {
@@ -77,6 +76,7 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
 
   // Clean-up
   rsrc_free();
+  free_bitmap(background);
   hide_mouse();
   return do_exit_program;
 }

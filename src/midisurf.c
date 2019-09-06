@@ -26,7 +26,7 @@ int main(void) {
 
   // Loop until the game should exit
   int do_exit_program = 0;
-  while (!do_exit_program) {
+  while (do_exit_program == 0) {
 
     // Handles the menu options
 #if DEBUG == 0
@@ -39,6 +39,7 @@ int main(void) {
       sprintf(midi_file_path, "testmidi");
     #endif
     sprintf(midi_file_name, "got.mid");
+    do_exit_program = 1;
 #endif
 
     // File opening and reading
