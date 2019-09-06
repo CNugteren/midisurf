@@ -23,7 +23,7 @@ void remove_asterisks(char *file_path) {
 //--------------------------------------------------------------------------------------------------
 
 int start_menu(char *midi_file_path, char *midi_file_name) {
-  graf_mouse(ARROW, NULL);
+  show_mouse();
   clear_buffer();
 
   // Loads the resources (RSC file) for the start menu (edit with MMRCP.PRG)
@@ -77,6 +77,7 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
 
   // Clean-up
   rsrc_free();
+  hide_mouse();
   return do_exit_program;
 }
 

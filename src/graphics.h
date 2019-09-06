@@ -45,6 +45,8 @@
   #define objc_change(a, b, c, d, e, f, g, h, i) a = NULL
   #define object_set_offset(a, b, c) a = NULL
 
+  #define graf_mouse(a, b) printf("> Mouse type: %d\n", a)
+  #define ARROW 2
 #endif
 
 //--------------------------------------------------------------------------------------------------
@@ -68,6 +70,10 @@ void clear_buffer();
 void set_colour(const short value);
 
 void write_text(const short x, const short y, const char* text);
+
+void hide_mouse();
+
+void show_mouse();
 
 //--------------------------------------------------------------------------------------------------
 // GEM VDI graphics: setup/teardown functionality

@@ -41,6 +41,15 @@ void write_text(const short x, const short y, const char* text) {
   v_gtext(handle, x, y, text);
 }
 
+void hide_mouse() {
+  graf_mouse(256, NULL);
+}
+
+void show_mouse() {
+  graf_mouse(257, NULL);
+  graf_mouse(ARROW, NULL);
+}
+
 //--------------------------------------------------------------------------------------------------
 
 // Initializes the graphics system on the Atari ST, returning 57 properties of the system
@@ -53,6 +62,7 @@ void init_graphics() {
   }
   settings_in[10] = 2;
   v_opnvwk(settings_in, &handle, properties_out);
+  hide_mouse();
 }
 
 void stop_graphics() {
