@@ -34,7 +34,7 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
 
   // Displays the background bitmap
   OBJECT* background = (OBJECT*) malloc(1 * sizeof(OBJECT));
-  background[0] = load_bitmap("background.pbm");
+  background[0] = load_bitmap("graphics/menu.pbm");
   object_set_offset(background, 0, 0);
   objc_draw(background, 0, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
