@@ -11,12 +11,19 @@
 #include "midisurf.h"
 #include "io.h"
 #include "menu.h"
+#include "bitmap.h"
 
 //--------------------------------------------------------------------------------------------------
 
 int main(void) {
   appl_init();
   init_graphics();
+
+  // Loads the background bitmaps
+  OBJECT* background_menu = (OBJECT*) malloc(1 * sizeof(OBJECT));
+  background_menu[0] = load_bitmap("graphics/menu.pbm");
+  OBJECT* background_loading = (OBJECT*) malloc(1 * sizeof(OBJECT));
+  background_loading[0] = load_bitmap("graphics/loading.pbm");
 
   // Sets the defaults for the file paths
   char midi_file_path[MAX_PATH_LENGTH];
@@ -30,7 +37,7 @@ int main(void) {
 
     // Handles the menu options
 #if DEBUG == 0
-    do_exit_program = start_menu(midi_file_path, midi_file_name);
+    do_exit_program = start_menu(background_menu, midi_file_path, midi_file_name);
     if (do_exit_program == 1) { break; }
 #else
     #ifndef UNIX // Atari ST
@@ -62,7 +69,8 @@ int main(void) {
     }
 
     // Midi parsing of the tracks, resulting in instructions what notes to play
-    const struct midistats stats = parse_tracks(tracks, header.tracks, instructions);
+    const struct midistats stats = parse_tracks(tracks, header.tracks, instructions,
+                                                background_loading);
 
     // Playing the game
     init_audio();
@@ -85,6 +93,8 @@ int main(void) {
   }
 
   // End of the program
+  free_bitmap(background_menu);
+  free_bitmap(background_loading);
   stop_graphics();
   appl_exit();
   return 0;

@@ -2,6 +2,8 @@
 #ifndef _MENU_H
 #define _MENU_H
 
+#include "graphics.h"
+
 // Resources
 #include "../MENUBAR.H"
 
@@ -26,7 +28,7 @@
 void remove_asterisks(char *file_path);
 
 // Defines and handles the menu; returns a boolean whether or not to quit the whole application
-int start_menu(char *midi_file_path, char *midi_file_name);
+int start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_name);
 
 //--------------------------------------------------------------------------------------------------
 #endif // _MENU_H

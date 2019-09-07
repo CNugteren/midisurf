@@ -158,12 +158,12 @@ struct track_chunk* read_tracks(FILE* file, struct header_chunk header) {
 //--------------------------------------------------------------------------------------------------
 
 struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tracks,
-                              struct instr** instructions) {
+                              struct instr** instructions, OBJECT* background) {
   printf("> Parsing %d tracks:\n", num_tracks);
 
   // Graphics in the background
   clear_buffer();
-  draw_parsing_background(tracks, num_tracks);
+  draw_parsing_background(background, tracks, num_tracks);
 
   // Initialization
   int* times = (int *) malloc(num_tracks * sizeof(int));
@@ -399,11 +399,10 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
 
 //--------------------------------------------------------------------------------------------------
 
-void draw_parsing_background(const struct track_chunk* tracks, const short num_tracks) {
+void draw_parsing_background(OBJECT* background, const struct track_chunk* tracks,
+                             const short num_tracks) {
 
   // Displays the background bitmap
-  OBJECT* background = (OBJECT*) malloc(1 * sizeof(OBJECT));
-  background[0] = load_bitmap("graphics/loading.pbm");
   object_set_offset(background, 0, 0);
   objc_draw(background, 0, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 

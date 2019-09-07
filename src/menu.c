@@ -22,7 +22,7 @@ void remove_asterisks(char *file_path) {
 
 //--------------------------------------------------------------------------------------------------
 
-int start_menu(char *midi_file_path, char *midi_file_name) {
+int start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_name) {
   show_mouse();
   clear_buffer();
 
@@ -33,10 +33,8 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
   }
 
   // Displays the background bitmap
-  OBJECT* background = (OBJECT*) malloc(1 * sizeof(OBJECT));
-  background[0] = load_bitmap("graphics/menu.pbm");
-  object_set_offset(background, 0, 0);
-  objc_draw(background, 0, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+  object_set_offset(background_menu, 0, 0);
+  objc_draw(background_menu, 0, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
   // Displays the textual game instructions
   OBJECT* bg_text;
@@ -76,7 +74,6 @@ int start_menu(char *midi_file_path, char *midi_file_name) {
 
   // Clean-up
   rsrc_free();
-  free_bitmap(background);
   hide_mouse();
   return do_exit_program;
 }

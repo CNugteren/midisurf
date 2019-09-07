@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "graphics.h"
+
 //--------------------------------------------------------------------------------------------------
 // Midi parsing
 
@@ -47,12 +49,13 @@ struct midistats {
 };
 
 struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tracks,
-                              struct instr** instructions);
+                              struct instr** instructions, OBJECT* background);
 
 //--------------------------------------------------------------------------------------------------
 // Display the status of midi parsing
 
-void draw_parsing_background(const struct track_chunk* tracks, const short num_tracks);
+void draw_parsing_background(OBJECT* background, const struct track_chunk* tracks,
+                             const short num_tracks);
 
 void draw_track_name(const short track_id, const __uint8_t* name, const short length);
 
