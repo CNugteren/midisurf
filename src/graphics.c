@@ -30,7 +30,10 @@ void clear_box(const short x, const short y, const short width, const short heig
 }
 
 void clear_buffer() {
-  v_clrwk(handle);
+  set_colour(0);
+  short rect[4]; rect[0] = 0; rect[1] = 0; rect[2] = DISPLAY_WIDTH; rect[3] = DISPLAY_HEIGHT;
+  vr_recfl(handle, rect);
+  set_colour(1);
 }
 
 void set_colour(const short value) {

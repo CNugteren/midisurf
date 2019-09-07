@@ -26,6 +26,7 @@
   #define v_bar(a, b)
   #define vsf_color(a, b)
   #define v_gtext(a, b, c, d)
+  #define vr_recfl(a, b)
 
   struct object {
     short ob_next;
