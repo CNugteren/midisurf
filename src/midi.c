@@ -166,111 +166,103 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
   clear_buffer();
   draw_parsing_background(background, tracks, num_tracks);
 
-  // Initialization
-  int times[MAX_TRACKS];
-  int indices[MAX_TRACKS];
-  short complete[MAX_TRACKS]; // boolean
-  short key_pressed[MAX_TRACKS];
-  int instruction_indices[MAX_TRACKS];
-  short progress[MAX_TRACKS];
-  short track_id = 0;
-  for (track_id = 0; track_id < num_tracks; ++track_id) {
-    times[track_id] = 0;
-    indices[track_id] = 0;
-    complete[track_id] = 0;
-    key_pressed[track_id] = -1;
-    instruction_indices[track_id] = 0;
-    progress[track_id] = 0;
-  }
+  // The results structure
   struct midistats stats;
   stats.min_key = 255;
   stats.max_key = 0;
+  stats.end_time = 0;
 
-  // Time loop
-  int time = 0;
-  short all_tracks_done = 0; // boolean
-  while (all_tracks_done != 1) {
+  // Loops over each track
+  short track_id = 0;
+  for (track_id = 0; track_id < num_tracks; ++track_id) {
 
-    for (track_id = 0; track_id < num_tracks; ++track_id) {
-      if (complete[track_id] == 1) { continue; } // This track is complete
+    // Initialization
+    int times = 0;
+    int indices = 0;
+    int instruction_indices = 0;
+    short key_pressed = -1;
+    short progress = 0;
+
+    // Time loop
+    int time = 0;
+    while (1) { // until the end-of-track is found in the midi, exiting through a break statement
 
       // Parse the event header
-      const short length_of_vlq = find_length_of_vlq(&tracks[track_id].data[indices[track_id]]);
-      const short delta_time = get_variable_length_quantity(&tracks[track_id].data[indices[track_id]], length_of_vlq);
-      if (time < times[track_id] + delta_time) { continue; } // Nothing happening at this time for this track
+      const short length_of_vlq = find_length_of_vlq(&tracks[track_id].data[indices]);
+      const short delta_time = get_variable_length_quantity(&tracks[track_id].data[indices], length_of_vlq);
+      if (time < times + delta_time) { time++; continue; } // Nothing happening at this time for this track
 
-      indices[track_id] += length_of_vlq;
-      times[track_id] += delta_time;
-      print_debug("   [%8d][%8d][%3d][%3d%%] Event: ",
-                  time, times[track_id], track_id, progress[track_id]);
-      const __uint8_t event_id = tracks[track_id].data[indices[track_id]++];
+      indices += length_of_vlq;
+      times += delta_time;
+      print_debug("   [%8d][%8d][%3d][%3d%%] Event: ", time, times, track_id, progress);
+      const __uint8_t event_id = tracks[track_id].data[indices++];
 
       // Meta-event
       if (event_id == 0xFF) {
-        const __uint8_t meta_type = tracks[track_id].data[indices[track_id]++];
+        const __uint8_t meta_type = tracks[track_id].data[indices++];
         print_debug("Meta-event %#04x - ", meta_type);
 
         // Ascii meta-events (0x1 till 0x9): just print the data and continue
         if (meta_type >= 1 && meta_type <= 0xa) {
-          const short meta_length = parse_vlq_value(tracks[track_id].data, &indices[track_id]);
+          const short meta_length = parse_vlq_value(tracks[track_id].data, &indices);
           if (meta_type == 0x03) {
-            draw_track_name(track_id, &tracks[track_id].data[indices[track_id]], meta_length);
+            draw_track_name(track_id, &tracks[track_id].data[indices], meta_length);
           }
           print_ascii_type(meta_type);
-          parse_ascii_values(tracks[track_id].data, &indices[track_id], meta_length);
+          parse_ascii_values(tracks[track_id].data, &indices, meta_length);
         }
 
         // MIDI channel prefix
         else if (meta_type == 0x20) {
-          assert(tracks[track_id].data[indices[track_id]] == 0x01); indices[track_id]++; // spec
-          const __uint8_t channel_prefix = tracks[track_id].data[indices[track_id]++];
+          assert(tracks[track_id].data[indices] == 0x01); indices++; // spec
+          const __uint8_t channel_prefix = tracks[track_id].data[indices++];
           print_debug("Midi channel prefix: %d", channel_prefix);
         }
 
         // MIDI port
         else if (meta_type == 0x21) {
-          assert(tracks[track_id].data[indices[track_id]] == 0x01); indices[track_id]++; // spec
-          const __uint8_t port = tracks[track_id].data[indices[track_id]++];
+          assert(tracks[track_id].data[indices] == 0x01); indices++; // spec
+          const __uint8_t port = tracks[track_id].data[indices++];
           print_debug("Midi port: %d", port);
         }
 
         // End of track
         else if (meta_type == 0x2F) {
-          assert(tracks[track_id].data[indices[track_id]] == 0x00); indices[track_id]++; // spec
-          complete[track_id] = 1;
+          assert(tracks[track_id].data[indices] == 0x00); indices++; // spec
           print_debug("End-of-track");
+          break;
         }
 
         // Tempo change
         else if (meta_type == 0x51) {
-          assert(tracks[track_id].data[indices[track_id]] == 0x03); indices[track_id]++; // spec
-          const unsigned int tempo = (tracks[track_id].data[indices[track_id] + 0] << 16) +
-                                     (tracks[track_id].data[indices[track_id] + 1] << 8) +
-                                      tracks[track_id].data[indices[track_id] + 2];
+          assert(tracks[track_id].data[indices] == 0x03); indices++; // spec
+          const unsigned int tempo = (tracks[track_id].data[indices + 0] << 16) +
+                                     (tracks[track_id].data[indices + 1] << 8) +
+                                      tracks[track_id].data[indices + 2];
           print_debug("Tempo change to %d us per quarter-note (%d bpm per qn)", tempo, 60000000 / tempo);
-          indices[track_id] += 3;
+          indices += 3;
         }
 
         // SMPTE offset
         else if (meta_type == 0x54) {
           assert(delta_time == 0); // has to be at the beginning
-          assert(tracks[track_id].data[indices[track_id]] == 0x05); indices[track_id]++; // spec
-          const __uint8_t hours = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t minutes = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t seconds = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t frames = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t fractions = tracks[track_id].data[indices[track_id]++];
+          assert(tracks[track_id].data[indices] == 0x05); indices++; // spec
+          const __uint8_t hours = tracks[track_id].data[indices++];
+          const __uint8_t minutes = tracks[track_id].data[indices++];
+          const __uint8_t seconds = tracks[track_id].data[indices++];
+          const __uint8_t frames = tracks[track_id].data[indices++];
+          const __uint8_t fractions = tracks[track_id].data[indices++];
           print_debug("SMPTE offset (hh:mm:ss fr:ff): %02d:%02d:%02d %02d.%02d",
                       hours, minutes, seconds, frames, fractions);
         }
 
         // Time signature
         else if (meta_type == 0x58) {
-          assert(tracks[track_id].data[indices[track_id]] == 0x04); indices[track_id]++; // spec
-          const __uint8_t numerator = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t denominator = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t clocks_per_click = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t num_32rd_notes_per_quarter_note = tracks[track_id].data[indices[track_id]++];
+          assert(tracks[track_id].data[indices] == 0x04); indices++; // spec
+          const __uint8_t numerator = tracks[track_id].data[indices++];
+          const __uint8_t denominator = tracks[track_id].data[indices++];
+          const __uint8_t clocks_per_click = tracks[track_id].data[indices++];
+          const __uint8_t num_32rd_notes_per_quarter_note = tracks[track_id].data[indices++];
           print_debug("Time signature: %d/%d time, %d clocks per dotted-quarter, "
                       "%d notated 32nd-notes per quarter-note",
                       numerator, denominator, clocks_per_click, num_32rd_notes_per_quarter_note);
@@ -278,9 +270,9 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
 
           // Key signature
         else if (meta_type == 0x59) {
-          assert(tracks[track_id].data[indices[track_id]] == 0x02); indices[track_id]++; // spec
-          const __uint8_t sf = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t mi = tracks[track_id].data[indices[track_id]++];
+          assert(tracks[track_id].data[indices] == 0x02); indices++; // spec
+          const __uint8_t sf = tracks[track_id].data[indices++];
+          const __uint8_t mi = tracks[track_id].data[indices++];
           print_debug("Key signature, sharp/flats: %d, major/minor: %d", sf, mi);
         }
 
@@ -295,10 +287,10 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
       // Regular system event
       else if (event_id == 0xF0) {
         printf("Regular system-event - ");
-        const short length = parse_vlq_value(tracks[track_id].data, &indices[track_id]);
+        const short length = parse_vlq_value(tracks[track_id].data, &indices);
         short index = 0;
         for (index = 0; index < length; ++index) {
-          const __uint8_t value = tracks[track_id].data[indices[track_id]++];
+          const __uint8_t value = tracks[track_id].data[indices++];
           printf("%d ", value);
         }
         printf("\n");
@@ -323,41 +315,41 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
         const __uint8_t channel_bits = status & 0x0F;
         print_debug("On channel %d - ", channel_bits);
         if (status_bits == 0b1000) {
-          const __uint8_t key_number = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t pressure_value = tracks[track_id].data[indices[track_id]++];
+          const __uint8_t key_number = tracks[track_id].data[indices++];
+          const __uint8_t pressure_value = tracks[track_id].data[indices++];
           print_debug("Key release '%d' with value '%d'\n", key_number, pressure_value);
-          if (key_pressed[track_id] == key_number) {
-            key_pressed[track_id] = -1;
+          if (key_pressed == key_number) {
+            key_pressed = -1;
           }
         }
         else if (status_bits == 0b1001) {
-          const __uint8_t key_number = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t pressure_value = tracks[track_id].data[indices[track_id]++];
+          const __uint8_t key_number = tracks[track_id].data[indices++];
+          const __uint8_t pressure_value = tracks[track_id].data[indices++];
           print_debug("Key press '%d' with value '%d' \n", key_number, pressure_value);
-          instructions[track_id][instruction_indices[track_id]].time = time;
-          instructions[track_id][instruction_indices[track_id]].key = key_number;
-          instructions[track_id][instruction_indices[track_id]].pressure = pressure_value;
-          instruction_indices[track_id]++;
-          key_pressed[track_id] = key_number;
+          instructions[track_id][instruction_indices].time = time;
+          instructions[track_id][instruction_indices].key = key_number;
+          instructions[track_id][instruction_indices].pressure = pressure_value;
+          instruction_indices++;
+          key_pressed = key_number;
           if (key_number > stats.max_key) { stats.max_key = key_number; }
           if (key_number < stats.min_key) { stats.min_key = key_number; }
         }
         else if (status_bits == 0b1011) {
-          const __uint8_t controller = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t value = tracks[track_id].data[indices[track_id]++];
+          const __uint8_t controller = tracks[track_id].data[indices++];
+          const __uint8_t value = tracks[track_id].data[indices++];
           print_debug("Controller change to controller '%d' with value '%d'\n", controller, value);
         }
         else if (status_bits == 0b1100) {
-          const __uint8_t instrument_type = tracks[track_id].data[indices[track_id]++];
+          const __uint8_t instrument_type = tracks[track_id].data[indices++];
           print_debug("Program change to instrument '%d'\n", instrument_type);
         }
         else if (status_bits == 0b1101) {
-          const __uint8_t pressure_value = tracks[track_id].data[indices[track_id]++];
+          const __uint8_t pressure_value = tracks[track_id].data[indices++];
           print_debug("Channel pressure aftertouch '%d'\n", pressure_value);
         }
         else if (status_bits == 0b1110) {
-          const __uint8_t lsbs = tracks[track_id].data[indices[track_id]++];
-          const __uint8_t msbs = tracks[track_id].data[indices[track_id]++];
+          const __uint8_t lsbs = tracks[track_id].data[indices++];
+          const __uint8_t msbs = tracks[track_id].data[indices++];
           const unsigned short pressure_value = (msbs << 7) + lsbs;
           print_debug("Pitch wheel change of '%d'\n", pressure_value);
         }
@@ -367,26 +359,22 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
         }
       }
 
-      if (indices[track_id] > tracks[track_id].length) {
-        printf("Error, track parser went beyond the length of %d at %d\n", tracks[track_id].length, indices[track_id]);
+      if (indices > tracks[track_id].length) {
+        printf("Error, track parser went beyond the length of %d at %d\n", tracks[track_id].length, indices);
         error("Error, track parser went beyond the expected length");
       }
-      progress[track_id] = (indices[track_id] * 100) / tracks[track_id].length;
-      draw_progress_bar(progress[track_id], track_id);
-    } // end of track for-loop
+      progress = (indices * 100) / tracks[track_id].length;
+      draw_progress_bar(progress, track_id);
 
-    // End condition
-    all_tracks_done = 1;
-    for (track_id = 0; track_id < num_tracks; ++track_id) {
-      if (complete[track_id] == 0) {
-        all_tracks_done = 0;
-        break;
-      }
+      time++;
+    } // end of time while-loop
+    draw_progress_bar(100, track_id);
+
+    if (time > stats.end_time) {
+      stats.end_time = time; // The time found at the end of the parsing
     }
-    time++;
-  } // end of time while-loop
+  } // end of track for-loop
 
-  stats.end_time = time; // The time found at the end of the parsing
   return stats;
 }
 

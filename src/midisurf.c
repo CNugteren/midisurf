@@ -67,6 +67,12 @@ int main(void) {
         instructions[track_id][pos].pressure = 0;
       }
     }
+    //char form_text[139 + 4];
+    //sprintf(form_text, "[1][ Midisurf can be played | with at most 3 MIDI tracks, |"
+    //                   " and %d where found. Please | select the one(s) to use in |"
+    //                   " the next screens.][OK]", header.tracks);
+    //form_alert(1, form_text);
+
 
     // Midi parsing of the tracks, resulting in instructions what notes to play
     const struct midistats stats = parse_tracks(tracks, header.tracks, instructions,

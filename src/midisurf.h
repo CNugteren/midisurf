@@ -4,7 +4,7 @@
 
 #include "midi.h"
 
-#define DEBUG 0
+#define DEBUG 1
 
 #ifndef UNIX // Atari ST
   //#define printf
