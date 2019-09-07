@@ -8,6 +8,7 @@
 #include "midisurf.h"
 #include "graphics.h"
 #include "io.h"
+#include "bitmap.h"
 
 // Debugging print statements
 #ifndef UNIX // ATARI ST
@@ -399,7 +400,15 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
 //--------------------------------------------------------------------------------------------------
 
 void draw_parsing_background(const struct track_chunk* tracks, const short num_tracks) {
-  write_text(DISPLAY_PROGRESS_X_TEXT, 30, "Parsing tracks...");
+
+  // Displays the background bitmap
+  OBJECT* background = (OBJECT*) malloc(1 * sizeof(OBJECT));
+  background[0] = load_bitmap("graphics/loading.pbm");
+  object_set_offset(background, 0, 0);
+  objc_draw(background, 0, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+
+  // Displays the static text
+  write_text(DISPLAY_PROGRESS_X_TEXT, 35, "Parsing tracks...");
   const short percentage_y =  DISPLAY_PROGRESS_Y_OFFSET - 5;
   write_text(DISPLAY_PROGRESS_X_OFFSET - 3, percentage_y, "0%");
   write_text(DISPLAY_PROGRESS_X_OFFSET + 44 * DISPLAY_PROGRESS_SPEED, percentage_y, "50%");
