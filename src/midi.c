@@ -19,17 +19,17 @@
 
 //--------------------------------------------------------------------------------------------------
 
-int find_length_of_vlq(const __uint8_t* buffer) {
-  int index = 0;
+static inline short find_length_of_vlq(const __uint8_t* buffer) {
+  short index = 0;
   while (buffer[index] & 0x80) {
     index++;
   }
   return index + 1;
 }
 
-int get_variable_length_quantity(const __uint8_t* buffer, const int length) {
-  int value = 0;
-  int index = 0;
+static inline short get_variable_length_quantity(const __uint8_t* buffer, const short length) {
+  short value = 0;
+  short index = 0;
   for (index = 0; index < length; ++index) {
     value += buffer[index] & 0x7f;
     if (index != length - 1) {
@@ -39,9 +39,9 @@ int get_variable_length_quantity(const __uint8_t* buffer, const int length) {
   return value;
 }
 
-int parse_vlq_value(const __uint8_t* buffer, int *index) {
-  int length_of_vlq = find_length_of_vlq(&buffer[*index]);
-  const int vlq_value = get_variable_length_quantity(&buffer[*index], length_of_vlq);
+short parse_vlq_value(const __uint8_t* buffer, int *index) {
+  short length_of_vlq = find_length_of_vlq(&buffer[*index]);
+  const short vlq_value = get_variable_length_quantity(&buffer[*index], length_of_vlq);
   *index += length_of_vlq;
   return vlq_value;
 }
@@ -58,9 +58,9 @@ void print_ascii_type(const __uint8_t meta_type) {
   if (meta_type == 0x07) { print_debug("Cue point: "); }
 }
 
-void parse_ascii_values(const __uint8_t* buffer, int *index, const int meta_length) {
+void parse_ascii_values(const __uint8_t* buffer, int *index, const short meta_length) {
   print_debug("'");
-  int i = 0;
+  short i = 0;
   for (i = 0; i < meta_length; ++i) {
     print_debug("%c", buffer[(*index)++]);
   }
@@ -75,7 +75,7 @@ struct header_chunk read_header_chunk(FILE* file) {
   // Midi chunk type (ascii)
   if (fread(&chunk.type, 4, 1, file) != 1) { error("Error reading chunk type"); }
   chunk.type[4] = '\0';
-  int is_header = strcmp(chunk.type, "MThd");
+  short is_header = strcmp(chunk.type, "MThd");
   if (is_header != 0) {
     printf("Unexpected chunk type: %s\n", chunk.type);
     error("Unexpected chunk type");
@@ -125,7 +125,7 @@ struct track_chunk read_track_chunk(FILE* file) {
   // Midi chunk type (ascii)
   if (fread(&chunk.type, 4, 1, file) != 1) { error("Error reading chunk type"); }
   chunk.type[4] = '\0';
-  int is_track = strcmp(chunk.type, "MTrk");
+  short is_track = strcmp(chunk.type, "MTrk");
   if (is_track != 0) {
     printf("Unexpected chunk type: %s\n", chunk.type);
     error("Unexpected chunk type");
@@ -146,7 +146,7 @@ struct track_chunk read_track_chunk(FILE* file) {
 // Calls the above function multiple times, once for each track
 struct track_chunk* read_tracks(FILE* file, struct header_chunk header) {
   struct track_chunk* tracks = (struct track_chunk*) malloc(header.tracks * sizeof(struct track_chunk));
-  int track_id = 0;
+  short track_id = 0;
   for (track_id = 0; track_id < header.tracks; ++track_id) {
     printf("> Reading track %d - ", track_id);
     struct track_chunk track = read_track_chunk(file);
@@ -157,22 +157,23 @@ struct track_chunk* read_tracks(FILE* file, struct header_chunk header) {
 
 //--------------------------------------------------------------------------------------------------
 
-struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tracks,
+struct midistats parse_tracks(const struct track_chunk* tracks, const short num_tracks,
                               struct instr** instructions, OBJECT* background) {
   printf("> Parsing %d tracks:\n", num_tracks);
+  if (num_tracks > 3) { error("At most 3 tracks are supported"); }
 
   // Graphics in the background
   clear_buffer();
   draw_parsing_background(background, tracks, num_tracks);
 
   // Initialization
-  int* times = (int *) malloc(num_tracks * sizeof(int));
-  int* indices = (int *) malloc(num_tracks * sizeof(int));
-  int* complete = (int *) malloc(num_tracks * sizeof(int));
-  int* key_pressed = (int *) malloc(num_tracks * sizeof(int));
-  int* instruction_indices = (int *) malloc(num_tracks * sizeof(int));
-  int* progress = (int *) malloc(num_tracks * sizeof(int));
-  int track_id = 0;
+  int times[MAX_TRACKS];
+  int indices[MAX_TRACKS];
+  short complete[MAX_TRACKS]; // boolean
+  short key_pressed[MAX_TRACKS];
+  int instruction_indices[MAX_TRACKS];
+  short progress[MAX_TRACKS];
+  short track_id = 0;
   for (track_id = 0; track_id < num_tracks; ++track_id) {
     times[track_id] = 0;
     indices[track_id] = 0;
@@ -186,17 +187,16 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
   stats.max_key = 0;
 
   // Time loop
-  int i = 0;
-  __uint16_t time = 0;
-  int all_tracks_done = 0;
+  int time = 0;
+  short all_tracks_done = 0; // boolean
   while (all_tracks_done != 1) {
 
     for (track_id = 0; track_id < num_tracks; ++track_id) {
       if (complete[track_id] == 1) { continue; } // This track is complete
 
       // Parse the event header
-      const int length_of_vlq = find_length_of_vlq(&tracks[track_id].data[indices[track_id]]);
-      const int delta_time = get_variable_length_quantity(&tracks[track_id].data[indices[track_id]], length_of_vlq);
+      const short length_of_vlq = find_length_of_vlq(&tracks[track_id].data[indices[track_id]]);
+      const short delta_time = get_variable_length_quantity(&tracks[track_id].data[indices[track_id]], length_of_vlq);
       if (time < times[track_id] + delta_time) { continue; } // Nothing happening at this time for this track
 
       indices[track_id] += length_of_vlq;
@@ -212,7 +212,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
 
         // Ascii meta-events (0x1 till 0x9): just print the data and continue
         if (meta_type >= 1 && meta_type <= 0xa) {
-          const int meta_length = parse_vlq_value(tracks[track_id].data, &indices[track_id]);
+          const short meta_length = parse_vlq_value(tracks[track_id].data, &indices[track_id]);
           if (meta_type == 0x03) {
             draw_track_name(track_id, &tracks[track_id].data[indices[track_id]], meta_length);
           }
@@ -295,8 +295,9 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
       // Regular system event
       else if (event_id == 0xF0) {
         printf("Regular system-event - ");
-        const int length = parse_vlq_value(tracks[track_id].data, &indices[track_id]);
-        for (i = 0; i < length; ++i) {
+        const short length = parse_vlq_value(tracks[track_id].data, &indices[track_id]);
+        short index = 0;
+        for (index = 0; index < length; ++index) {
           const __uint8_t value = tracks[track_id].data[indices[track_id]++];
           printf("%d ", value);
         }
@@ -357,7 +358,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
         else if (status_bits == 0b1110) {
           const __uint8_t lsbs = tracks[track_id].data[indices[track_id]++];
           const __uint8_t msbs = tracks[track_id].data[indices[track_id]++];
-          const unsigned int pressure_value = (msbs << 7) + lsbs;
+          const unsigned short pressure_value = (msbs << 7) + lsbs;
           print_debug("Pitch wheel change of '%d'\n", pressure_value);
         }
         else {
@@ -382,16 +383,8 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const int num_tr
         break;
       }
     }
-    if (time == 65536 - 1) { break; }
     time++;
   } // end of time while-loop
-
-  // Clean-up
-  free(times);
-  free(indices);
-  free(complete);
-  free(key_pressed);
-  free(instruction_indices);
 
   stats.end_time = time; // The time found at the end of the parsing
   return stats;
@@ -425,7 +418,7 @@ void draw_parsing_background(OBJECT* background, const struct track_chunk* track
 void draw_track_name(const short track_id, const __uint8_t* name, const short length) {
   char track_name_string[18]; // Max length of the printed name
   track_name_string[0] = '"';
-  int i = 0;
+  short i = 0;
   for (i = 0; i < length && i <= 18 - 3; ++i) { track_name_string[i + 1] = name[i]; }
   track_name_string[i + 1] = '"';
   track_name_string[i + 2] = '\0';

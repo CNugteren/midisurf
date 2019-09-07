@@ -57,10 +57,10 @@ int main(void) {
 
     // The data: a list of key press instructions
     short track_id = 0;
-    int pos = 0;
-    struct instr **instructions = (struct instr **) malloc(header.tracks * sizeof(struct instr *));
+    struct instr *instructions[MAX_TRACKS];
     for (track_id = 0; track_id < header.tracks; ++track_id) {
       instructions[track_id] = (struct instr *) malloc(tracks[track_id].length * sizeof(struct instr));
+      int pos = 0;
       for (pos = 0; pos < tracks[track_id].length; ++pos) {
         instructions[track_id][pos].time = -1;
         instructions[track_id][pos].key = 0;
@@ -86,7 +86,6 @@ int main(void) {
       free(instructions[track_id]);
       free(tracks[track_id].data);
     }
-    free(instructions);
     #ifdef UNIX
       do_exit_program = 1;
     #endif
