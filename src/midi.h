@@ -48,6 +48,8 @@ struct midistats {
   __uint8_t max_key;
 };
 
+short track_selection(struct track_chunk* tracks, short num_tracks);
+
 struct midistats parse_tracks(const struct track_chunk* tracks, const short num_tracks,
                               struct instr** instructions, OBJECT* background);
 

@@ -1,5 +1,6 @@
 //--------------------------------------------------------------------------------------------------
 
+#include "midisurf.h"
 #include "menu.h"
 #include "bitmap.h"
 #include "graphics.h"
@@ -26,19 +27,13 @@ int start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_na
   show_mouse();
   clear_buffer();
 
-  // Loads the resources (RSC file) for the start menu (edit with MMRCP.PRG)
-  if (rsrc_load("MENUBAR.RSC") == 0) {
-    form_alert(1, "Error while loading 'MENUBAR.RSC'");
-    return 1;
-  }
-
   // Displays the background bitmap
   object_set_offset(background_menu, 0, 0);
   objc_draw(background_menu, 0, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
   // Displays the textual game instructions
   OBJECT* bg_text;
-  rsrc_gaddr(0, TEXT, &bg_text);
+  rsrc_gaddr(0, START, &bg_text);
   object_set_offset(bg_text, 20, 100);
   objc_draw(bg_text, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
@@ -73,7 +68,6 @@ int start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_na
   }
 
   // Clean-up
-  rsrc_free();
   hide_mouse();
   return do_exit_program;
 }

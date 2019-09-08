@@ -9,6 +9,7 @@
 #include "graphics.h"
 #include "io.h"
 #include "bitmap.h"
+#include "menu.h"
 
 // Debugging print statements
 #ifndef UNIX // ATARI ST
@@ -153,6 +154,60 @@ struct track_chunk* read_tracks(FILE* file, struct header_chunk header) {
     tracks[track_id] = track;
   }
   return tracks;
+}
+
+//--------------------------------------------------------------------------------------------------
+
+short track_selection(struct track_chunk* tracks, short num_tracks) {
+  if (num_tracks > MAX_TRACKS) {
+    short track_id;
+
+    // Inform the user about track selection
+    char form_text[139 + 4];
+    sprintf(form_text, "[1][ Midisurf can be played | with at most 3 MIDI tracks, |"
+                       " and %d where found. Please | select the one(s) to use in |"
+                       " the next screens.][OK]", num_tracks);
+    form_alert(1, form_text);
+
+    // Displays the selection form
+    show_mouse();
+    OBJECT* selection_form;
+    rsrc_gaddr(0, TRACKS, &selection_form);
+    object_set_offset(selection_form, 200, 100);
+    objc_draw(selection_form, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+
+    // Wait for the (SELECTABLE & EXITABLE) button to be pressed
+    const short button = form_do(selection_form, 0);
+    hide_mouse();
+
+    // Reads the selection fields
+    OBJECT* selection_track_0;
+    rsrc_gaddr(0, TRACK0, &selection_track_0);
+    OBJECT* selection_track_1;
+    rsrc_gaddr(0, TRACK1, &selection_track_1);
+    OBJECT* selection_track_2;
+    rsrc_gaddr(0, TRACK2, &selection_track_2);
+
+    // Select the tracks
+    // TODO: Implement this based on the form input
+    short selection[MAX_TRACKS];
+    for (track_id = 0; track_id < MAX_TRACKS; ++track_id) {
+      selection[track_id] = 1;
+    }
+
+    // Apply the selection in two steps using an intermediate array as a temporary
+    struct track_chunk temp_tracks[MAX_TRACKS];
+    for (track_id = 0; track_id < MAX_TRACKS; ++track_id) {
+      printf("> Midi track %d will become track %d in the game\n", track_id, selection[track_id]);
+      temp_tracks[track_id] = tracks[selection[track_id]];
+    }
+    for (track_id = 0; track_id < MAX_TRACKS; ++track_id) {
+      tracks[track_id] = temp_tracks[track_id];
+    }
+
+    num_tracks = MAX_TRACKS;
+  }
+  return num_tracks;
 }
 
 //--------------------------------------------------------------------------------------------------

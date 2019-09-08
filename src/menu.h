@@ -4,16 +4,10 @@
 
 #include "graphics.h"
 
-// Resources
-#include "../MENUBAR.H"
-
 #ifndef UNIX // Atari ST
   #include <osbind.h>
   #include <gem.h>
 #else // UNIX (some random behaviour to make the syntax highlighter/compiler happy)
-  #define rsrc_gaddr(a, b, c) *c = a
-  #define rsrc_load(a) a
-  #define rsrc_free()
   #define form_alert(a, b) printf(b)
   #define form_center(a, b, c, d, e) a = b
   #define form_do(a, b) LOADMIDI

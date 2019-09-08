@@ -19,6 +19,12 @@ int main(void) {
   appl_init();
   init_graphics();
 
+  // Loads the resources (RSC file) for various forms (edit with MMRCP.PRG)
+  if (rsrc_load("FORMS.RSC") == 0) {
+    form_alert(1, "Error while loading 'FORMS.RSC'");
+    return 1;
+  }
+
   // Loads the background bitmaps
   OBJECT* background_menu = (OBJECT*) malloc(1 * sizeof(OBJECT));
   background_menu[0] = load_bitmap("graphics/menu.pbm");
@@ -55,10 +61,13 @@ int main(void) {
     struct track_chunk *tracks = read_tracks(file, header);
     close_file(file);
 
+    // Track selection
+    const short num_tracks = track_selection(tracks, header.tracks);
+
     // The data: a list of key press instructions
     short track_id = 0;
     struct instr *instructions[MAX_TRACKS];
-    for (track_id = 0; track_id < header.tracks; ++track_id) {
+    for (track_id = 0; track_id < num_tracks; ++track_id) {
       instructions[track_id] = (struct instr *) malloc(tracks[track_id].length * sizeof(struct instr));
       int pos = 0;
       for (pos = 0; pos < tracks[track_id].length; ++pos) {
@@ -69,12 +78,12 @@ int main(void) {
     }
 
     // Midi parsing of the tracks, resulting in instructions what notes to play
-    const struct midistats stats = parse_tracks(tracks, header.tracks, instructions,
+    const struct midistats stats = parse_tracks(tracks, num_tracks, instructions,
                                                 background_loading);
 
     // Playing the game
     init_audio();
-    struct game_result result = gameplay(stats, header.tracks, instructions);
+    struct game_result result = gameplay(stats, num_tracks, instructions);
     do_exit_program = result.exit;
     stop_audio();
 
@@ -82,7 +91,7 @@ int main(void) {
     display_score(result);
 
     // Clean-up
-    for (track_id = 0; track_id < header.tracks; ++track_id) {
+    for (track_id = 0; track_id < num_tracks; ++track_id) {
       free(instructions[track_id]);
       free(tracks[track_id].data);
     }
@@ -96,6 +105,7 @@ int main(void) {
   free_bitmap(background_loading);
   stop_graphics();
   appl_exit();
+  rsrc_free();
   return 0;
 }
 
