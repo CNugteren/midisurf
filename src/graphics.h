@@ -28,20 +28,6 @@
   #define v_gtext(a, b, c, d)
   #define vr_recfl(a, b)
 
-  struct object {
-    short ob_next;
-    short ob_head;
-    short ob_tail;
-    unsigned short ob_type;
-    unsigned short ob_flags;
-    unsigned short ob_state;
-    void* ob_spec;
-    short ob_x;
-    short ob_y;
-    short ob_width;
-    short ob_height;
-  };
-  #define OBJECT struct object
   #define objc_draw(a, b, c, d, e, f, g) a = NULL
   #define objc_change(a, b, c, d, e, f, g, h, i) a = NULL
   #define object_set_offset(a, b, c) a = NULL

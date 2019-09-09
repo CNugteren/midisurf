@@ -9,14 +9,6 @@
 
 #define DEBUG 0
 
-#ifndef UNIX // Atari ST
-  //#define printf
-#else // UNIX (some random behaviour to make the syntax highlighter/compiler happy)
-  #define rsrc_gaddr(a, b, c) *c = a
-  #define rsrc_load(a) a
-  #define rsrc_free()
-#endif
-
 //--------------------------------------------------------------------------------------------------
 
 // Global constants
