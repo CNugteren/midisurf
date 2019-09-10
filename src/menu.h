@@ -8,7 +8,6 @@
   #include <osbind.h>
   #include <gem.h>
 #else // UNIX (some random behaviour to make the syntax highlighter/compiler happy)
-  #define form_alert(a, b) printf(b)
   #define form_center(a, b, c, d, e) a = b
   #define form_do(a, b) LOADMIDI
   #define evnt_mesag(a) a[0] = 10; a[4] = LOADMIDI

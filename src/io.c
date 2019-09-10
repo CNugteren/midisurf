@@ -1,8 +1,11 @@
 //--------------------------------------------------------------------------------------------------
 
 #include <assert.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 #include "io.h"
+#include "atari.h"
 
 //--------------------------------------------------------------------------------------------------
 // File I/O
@@ -37,6 +40,26 @@ int key_pressed() {
 
 char get_key_value() {
   return Bconin(KEYBOARD_ID);
+}
+
+short read_int_from_form(OBJECT form) {
+  TEDINFO *text_field = form.ob_spec.tedinfo;
+  char value_str[4];
+  sprintf(value_str, text_field->te_ptext);
+  short i = 0;
+  for (i = 0; i < 3; ++i) {
+    if (value_str[i] == '_' || value_str[i] == ' ') {
+      value_str[i] = '0';
+    }
+    if (!isdigit(value_str[i])) {
+      char invalid_int_message[41 + 5];
+      sprintf(invalid_int_message, "[1][ Please enter a digit, | got '%s' ][OK]", value_str);
+      form_alert(1, invalid_int_message);
+      return -1;
+      break;
+    }
+  }
+  return atoi(value_str);
 }
 
 //--------------------------------------------------------------------------------------------------

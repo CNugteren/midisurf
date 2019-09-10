@@ -3,6 +3,7 @@
 #define _IO_H
 
 #include <stdio.h>
+#include "atari.h"
 
 //--------------------------------------------------------------------------------------------------
 
@@ -14,6 +15,7 @@
 
 #ifndef UNIX // Atari ST
   #include <osbind.h>
+  #include <gem.h>
   #define FILE_SEPARATOR "\\"
   #define printf
 #else // UNIX
@@ -35,6 +37,8 @@ void close_file(FILE* file_handle);
 int key_pressed();
 
 char get_key_value();
+
+short read_int_from_form(OBJECT form);
 
 //--------------------------------------------------------------------------------------------------
 

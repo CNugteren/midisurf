@@ -160,6 +160,7 @@ struct track_chunk* read_tracks(FILE* file, struct header_chunk header) {
 
 short track_selection(struct track_chunk* tracks, short num_tracks) {
   if (num_tracks > MAX_TRACKS) {
+    show_mouse();
     short track_id;
 
     // Inform the user about track selection
@@ -170,29 +171,43 @@ short track_selection(struct track_chunk* tracks, short num_tracks) {
     form_alert(1, form_text);
 
     // Displays the selection form
-    show_mouse();
     OBJECT* selection_form;
     rsrc_gaddr(0, TRACKS, &selection_form);
     object_set_offset(selection_form, 200, 100);
     objc_draw(selection_form, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
-    // Wait for the (SELECTABLE & EXITABLE) button to be pressed
-    const short button = form_do(selection_form, 0);
-    hide_mouse();
-
-    // Reads the selection fields
-    OBJECT* selection_track_0;
-    rsrc_gaddr(0, TRACK0, &selection_track_0);
-    OBJECT* selection_track_1;
-    rsrc_gaddr(0, TRACK1, &selection_track_1);
-    OBJECT* selection_track_2;
-    rsrc_gaddr(0, TRACK2, &selection_track_2);
-
-    // Select the tracks
-    // TODO: Implement this based on the form input
+    // Loops until we are happy with the form input
     short selection[MAX_TRACKS];
-    for (track_id = 0; track_id < MAX_TRACKS; ++track_id) {
-      selection[track_id] = 1;
+    short all_input_ok = 0; // boolean
+    while (!all_input_ok) {
+      all_input_ok = 1;
+
+      // Wait for the (SELECTABLE & EXITABLE) button to be pressed
+      const short button = form_do(selection_form, 0);
+
+      // Select the tracks (order is TRACK0,TRACK1,TRACK2 (i.e. 3, 4, 5, see forms.h)
+      for (track_id = 0; track_id < MAX_TRACKS; ++track_id) {
+        #ifndef UNIX // Atari ST
+          const short value = read_int_from_form(selection_form[TRACK0 + track_id]);
+          if (value == -1) {
+            all_input_ok = 0;
+            break;
+          }
+        #else // UNIX
+          const short value = track_id;
+        #endif
+        if (value < 0 || value >= num_tracks) {
+          char wrong_track_message[69 + 10 + 10];
+          sprintf(wrong_track_message, "[1][ Please select a track ID | between 0 and %d, got |"
+                                       " track ID %d ][OK]", num_tracks, value);
+          form_alert(1, wrong_track_message);
+          all_input_ok = 0;
+          break;
+        }
+        selection[track_id] = value;
+      }
+      objc_change(selection_form, TRACKS, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0x0, 1);
+      objc_draw(selection_form, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
     }
 
     // Apply the selection in two steps using an intermediate array as a temporary
@@ -206,6 +221,7 @@ short track_selection(struct track_chunk* tracks, short num_tracks) {
     }
 
     num_tracks = MAX_TRACKS;
+    hide_mouse();
   }
   return num_tracks;
 }

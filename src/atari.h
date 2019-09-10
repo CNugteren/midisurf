@@ -11,6 +11,8 @@
 #define rsrc_load(a) a
 #define rsrc_free()
 
+#define form_alert(a, b) printf(b)
+
 //--------------------------------------------------------------------------------------------------
 
 struct tedinfo {
