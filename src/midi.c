@@ -461,9 +461,6 @@ void draw_parsing_background(OBJECT* background, const struct track_chunk* track
   // Displays the static text
   write_text(DISPLAY_PROGRESS_X_TEXT, 35, "Parsing tracks...");
   const short percentage_y =  DISPLAY_PROGRESS_Y_OFFSET - 5;
-  write_text(DISPLAY_PROGRESS_X_OFFSET - 3, percentage_y, "0%");
-  write_text(DISPLAY_PROGRESS_X_OFFSET + 44 * DISPLAY_PROGRESS_SPEED, percentage_y, "50%");
-  write_text(DISPLAY_PROGRESS_X_OFFSET + 88 * DISPLAY_PROGRESS_SPEED, percentage_y, "100%");
   short track_id = 0;
   for (track_id = 0; track_id < num_tracks; ++track_id) {
     const short track_length = tracks[track_id].length;
