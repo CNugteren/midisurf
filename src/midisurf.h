@@ -21,22 +21,30 @@
 #define DISPLAY_UPDATE_FREQUENCY 4 // only update the display every n-steps
 #define DISPLAY_TIME_UPDATE_FREQUENCY 8 // only update the time every m-steps
 
-// Start of the game-play, above/below is the menu with the scores and such
-#define DISPLAY_HEIGHT_START 40
-#define DISPLAY_HEIGHT_END (DISPLAY_HEIGHT - 60)
+// Box of the actual game-play, above/below is the menu with the scores and such
+#define DISPLAY_HEIGHT_START 45
+#define DISPLAY_HEIGHT_END (DISPLAY_HEIGHT - 70)
 #define DISPLAY_HEIGHT_START_HALF (DISPLAY_HEIGHT_START / 2)
+#define DISPLAY_WIDTH_START 90
+#define DISPLAY_WIDTH_END (DISPLAY_WIDTH - 90)
+
+// Surfer properties
 #define DISPLAY_SURFER(id) (DISPLAY_HEIGHT - 20 - 20 * id)
+#define DISPLAY_SURFER_WIDTH 18 // the max width of the surfer
+#define DISPLAY_SURFER_HEIGHT 6 // the max width of the surfer
+#define SURFER_SPEED 14 // the x-movement every key press
+#define SURFER_TOLERANCE 16 // x-tolerance for both + and - of the surfer to hit a note to score
+
+// Text positions
+#define DISPLAY_TIME_X (DISPLAY_WIDTH - 60) // x-position with location of the time
+#define DISPLAY_SCORE_X(id) (id == 0 ? DISPLAY_WIDTH - 60 : 25) // x-position with location of the scores
+#define DISPLAY_SCORE_Y (DISPLAY_HEIGHT - 10) // y-position with location of the scores
 
 // Determines the resolution of the display grid based on the resolution of the screen
 #define DISPLAY_HEIGHT_ITEM (DISPLAY_HEIGHT / HISTORY_LENGTH)
 
 // Other
 #define DISPLAY_OBJECT_SIZE 6 // the max height and width of an object/note
-#define DISPLAY_SURFER_WIDTH 18 // the max width of the surfer
-#define DISPLAY_SURFER_HEIGHT 6 // the max width of the surfer
-#define DISPLAY_NUMBER_POS (DISPLAY_WIDTH - 60) // x-position with location of the time/score
-#define SURFER_SPEED 14 // the x-movement every key press
-#define SURFER_TOLERANCE 16 // x-tolerance for both + and - of the surfer to hit a note to score
 
 //--------------------------------------------------------------------------------------------------
 
@@ -48,7 +56,7 @@ struct game_result {
 
 // Plays the game and returns whether (1) or not (0) to stop
 struct game_result gameplay(const struct midistats stats, const int num_tracks,
-                            struct instr** instructions);
+                            struct instr** instructions, OBJECT* background_gameplay);
 
 void move_surfer_left(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y);
 void move_surfer_right(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y);

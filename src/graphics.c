@@ -1,6 +1,7 @@
 //--------------------------------------------------------------------------------------------------
 
 #include "graphics.h"
+#include "atari.h"
 
 //--------------------------------------------------------------------------------------------------
 
@@ -83,9 +84,11 @@ void draw_ball(const short x, const short y) {
   draw_line(x - 2, y + 2, x + 1, y + 2);
 }
 
-void draw_static_graphics(const short bar_top_height, const short bar_bottom_height) {
-  draw_line(0, bar_top_height, DISPLAY_WIDTH, bar_top_height);
-  draw_line(0, bar_bottom_height, DISPLAY_WIDTH, bar_bottom_height);
+void draw_static_graphics(OBJECT* background_menu) {
+
+  // Displays the background bitmap
+  object_set_offset(background_menu, 0, 0);
+  objc_draw(background_menu, 0, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 }
 
 void draw_surfer(const short x, const short y) {

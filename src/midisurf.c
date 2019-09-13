@@ -30,6 +30,8 @@ int main(void) {
   background_menu[0] = load_bitmap("graphics/menu.pbm");
   OBJECT* background_loading = (OBJECT*) malloc(1 * sizeof(OBJECT));
   background_loading[0] = load_bitmap("graphics/loading.pbm");
+  OBJECT* background_gameplay = (OBJECT*) malloc(1 * sizeof(OBJECT));
+  background_gameplay[0] = load_bitmap("graphics/gameplay.pbm");
 
   // Sets the defaults for the file paths
   char midi_file_path[MAX_PATH_LENGTH];
@@ -83,7 +85,7 @@ int main(void) {
 
     // Playing the game
     init_audio();
-    struct game_result result = gameplay(stats, num_tracks, instructions);
+    struct game_result result = gameplay(stats, num_tracks, instructions, background_gameplay);
     do_exit_program = result.exit;
     stop_audio();
 
@@ -103,6 +105,7 @@ int main(void) {
   // End of the program
   free_bitmap(background_menu);
   free_bitmap(background_loading);
+  free_bitmap(background_gameplay);
   stop_graphics();
   appl_exit();
   rsrc_free();
@@ -119,7 +122,7 @@ struct note_info {
 };
 
 struct game_result gameplay(const struct midistats stats, const int num_tracks,
-                            struct instr** instructions) {
+                            struct instr** instructions, OBJECT* background_gameplay) {
   printf("> Playing game (with %d tracks)\n", num_tracks);
   assert(num_tracks <= MAX_TRACKS);
 
@@ -141,7 +144,8 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
     notes_data[i].x = 0;
     notes_data[i].y = 0;
   }
-  const int display_width_key = DISPLAY_WIDTH / (stats.max_key - stats.min_key);
+  const int display_width_key = (DISPLAY_WIDTH_END - DISPLAY_WIDTH_START) /
+                                (stats.max_key - stats.min_key);
 
   // Initialization of the other data-structures
   struct instr current_instructions[MAX_TRACKS];
@@ -154,7 +158,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
 
   // Draws the initial static graphics
   clear_buffer();
-  draw_static_graphics(DISPLAY_HEIGHT_START, DISPLAY_HEIGHT_END);
+  draw_static_graphics(background_gameplay);
 
   // Display the surfers
   short surfer_pos_x[NUM_SURFERS];
@@ -178,7 +182,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
         if (num_notes + 1 == MAX_NOTES) { assert(0); }
         int new_note_index = (notes_start_index + num_notes) % MAX_NOTES;
         notes_data[new_note_index].x = display_width_key * (instruction.key - stats.min_key) +
-                                       (display_width_key / 2);
+                                       (display_width_key / 2) + DISPLAY_WIDTH_START;
         notes_data[new_note_index].y = DISPLAY_HEIGHT_START + DISPLAY_OBJECT_SIZE;
         notes_data[new_note_index].channel = track_id;
         notes_data[new_note_index].key = instruction.key;
@@ -261,7 +265,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
               result.scores[surfer_id] += 10;
               char score_string[6];
               sprintf(score_string, "%5d", result.scores[surfer_id]);
-              write_text(DISPLAY_NUMBER_POS, DISPLAY_SURFER(surfer_id), score_string);
+              write_text(DISPLAY_SCORE_X(surfer_id), DISPLAY_SCORE_Y, score_string);
             }
           }
         }
@@ -272,7 +276,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
       if (time_update) {
         char time_string[6];
         sprintf(time_string, "%5d", result.time);
-        write_text(DISPLAY_NUMBER_POS, DISPLAY_HEIGHT_START_HALF, time_string);
+        write_text(DISPLAY_TIME_X, DISPLAY_HEIGHT_START_HALF, time_string);
       }
     }
 
@@ -290,8 +294,9 @@ void move_surfer_left(const short surfer_id, short* surfer_pos_x, short* surfer_
   clear_box(surfer_pos_x[surfer_id] - (DISPLAY_SURFER_WIDTH / 2),
             surfer_pos_y[surfer_id] - (DISPLAY_SURFER_HEIGHT / 2),
             DISPLAY_SURFER_WIDTH, DISPLAY_SURFER_HEIGHT);
-  if (surfer_pos_x[surfer_id] > SURFER_SPEED) {
-    surfer_pos_x[surfer_id] -= SURFER_SPEED;
+  surfer_pos_x[surfer_id] -= SURFER_SPEED;
+  if (surfer_pos_x[surfer_id] <= DISPLAY_WIDTH_START) {
+    surfer_pos_x[surfer_id] = DISPLAY_WIDTH_START;
   }
   draw_surfer(surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
 }
@@ -300,8 +305,9 @@ void move_surfer_right(const short surfer_id, short* surfer_pos_x, short* surfer
   clear_box(surfer_pos_x[surfer_id] - (DISPLAY_SURFER_WIDTH / 2),
             surfer_pos_y[surfer_id] - (DISPLAY_SURFER_HEIGHT / 2),
             DISPLAY_SURFER_WIDTH, DISPLAY_SURFER_HEIGHT);
-  if (surfer_pos_x[surfer_id] < DISPLAY_NUMBER_POS - SURFER_SPEED) {
-    surfer_pos_x[surfer_id] += SURFER_SPEED;
+  surfer_pos_x[surfer_id] += SURFER_SPEED;
+  if (surfer_pos_x[surfer_id] >= DISPLAY_WIDTH_END) {
+    surfer_pos_x[surfer_id] = DISPLAY_WIDTH_END;
   }
   draw_surfer(surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
 }
@@ -311,7 +317,7 @@ void move_surfer_right(const short surfer_id, short* surfer_pos_x, short* surfer
 void display_score(const struct game_result result) {
   char string[80 + 8 + 8 + 8];
   sprintf(string, "[1][ Kalessin scored %d points | Orm Embar scored %d points | "
-                  "after %d beats][Hurray!]",
+                  "after %d ticks][Hurray!]",
           result.scores[0], result.scores[1], result.time);
   form_alert(1, string);
 }

@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "atari.h"
+
 //--------------------------------------------------------------------------------------------------
 
 #ifndef UNIX // Atari ST
@@ -74,7 +76,7 @@ void stop_graphics();
 
 void draw_ball(const short x, const short y);
 
-void draw_static_graphics(const short bar_top_height, const short bar_bottom_height);
+void draw_static_graphics(OBJECT* background_menu);
 
 void draw_surfer(const short x, const short y);
 
