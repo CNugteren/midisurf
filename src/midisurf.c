@@ -97,6 +97,7 @@ int main(void) {
       free(instructions[track_id]);
       free(tracks[track_id].data);
     }
+    free(tracks);
     #ifdef UNIX
       do_exit_program = 1;
     #endif

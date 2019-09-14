@@ -45,7 +45,7 @@ char get_key_value() {
 short read_int_from_form(OBJECT form) {
   TEDINFO *text_field = form.ob_spec.tedinfo;
   char value_str[4];
-  sprintf(value_str, text_field->te_ptext);
+  sprintf(value_str, "%s", text_field->te_ptext);
   short i = 0;
   for (i = 0; i < 3; ++i) {
     if (value_str[i] == '_' || value_str[i] == ' ') {

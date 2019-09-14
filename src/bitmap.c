@@ -62,8 +62,9 @@ OBJECT load_bitmap(const char* file_name) {
 //--------------------------------------------------------------------------------------------------
 
 void free_bitmap(OBJECT* bitmap) {
-  //free(bitmap[0].ob_spec->bi_pdata);
-  //free(bitmap[0].ob_spec);
+  BITBLK* bitblock = (BITBLK*)(bitmap[0].ob_spec.bitblk);
+  free(bitblock->bi_pdata);
+  free(bitblock);
   free(bitmap);
 }
 

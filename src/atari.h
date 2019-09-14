@@ -11,7 +11,7 @@
 #define rsrc_load(a) a
 #define rsrc_free()
 
-#define form_alert(a, b) printf(b)
+#define form_alert(a, b) printf("%s", b)
 
 //--------------------------------------------------------------------------------------------------
 
