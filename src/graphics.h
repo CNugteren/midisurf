@@ -78,7 +78,7 @@ void draw_ball(const short x, const short y);
 
 void draw_static_graphics(OBJECT* background_menu);
 
-void draw_surfer(const short x, const short y);
+void draw_surfer(const short id, const short x, const short y);
 
 void draw_catch(const short x_ball, const short y_ball, const short x_surfer, const short y_surfer);
 

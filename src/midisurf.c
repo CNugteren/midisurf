@@ -166,7 +166,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
   for (surfer_id = 0; surfer_id < NUM_SURFERS; ++surfer_id) {
     surfer_pos_x[surfer_id] = DISPLAY_WIDTH / 2;
     surfer_pos_y[surfer_id] = DISPLAY_SURFER(surfer_id);
-    draw_surfer(surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
+    draw_surfer(surfer_id, surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
   }
 
   // Time loop of the game-play
@@ -298,7 +298,7 @@ void move_surfer_left(const short surfer_id, short* surfer_pos_x, short* surfer_
   if (surfer_pos_x[surfer_id] <= DISPLAY_WIDTH_START) {
     surfer_pos_x[surfer_id] = DISPLAY_WIDTH_START;
   }
-  draw_surfer(surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
+  draw_surfer(surfer_id, surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
 }
 
 void move_surfer_right(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y) {
@@ -309,7 +309,7 @@ void move_surfer_right(const short surfer_id, short* surfer_pos_x, short* surfer
   if (surfer_pos_x[surfer_id] >= DISPLAY_WIDTH_END) {
     surfer_pos_x[surfer_id] = DISPLAY_WIDTH_END;
   }
-  draw_surfer(surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
+  draw_surfer(surfer_id, surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
 }
 
 //--------------------------------------------------------------------------------------------------

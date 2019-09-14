@@ -424,6 +424,11 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
           const unsigned short pressure_value = (msbs << 7) + lsbs;
           print_debug("Pitch wheel change of '%d'\n", pressure_value);
         }
+        else if (status_bits == 0b0101) {
+          // TODO: add support for this status
+          printf("Error, unsupported status bits 0101 (5)\n");
+          error("Error, unsupported status 0101");
+        }
         else {
           printf("Error, unsupported status %d\n", status_bits);
           error("Error, unsupported status");
@@ -460,7 +465,6 @@ void draw_parsing_background(OBJECT* background, const struct track_chunk* track
 
   // Displays the static text
   write_text(DISPLAY_PROGRESS_X_TEXT, 35, "Parsing tracks...");
-  const short percentage_y =  DISPLAY_PROGRESS_Y_OFFSET - 5;
   short track_id = 0;
   for (track_id = 0; track_id < num_tracks; ++track_id) {
     const short track_length = tracks[track_id].length;
