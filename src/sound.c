@@ -24,16 +24,15 @@
 
 #define WRITE 0x80 // or with this register to write with Giaccess, otherwise it is a read
 
-__uint8_t register_7; // Bits 6 and 7 of register 7 are OS managed register values
-
 void enable_channel(const int channel) {
-  register_7 &= (254 - channel - (channel == 2));
+  __uint8_t register_7 = Giaccess(0, 0x07);
+  register_7 &= ~(1UL << channel);
   Giaccess(register_7, 0x07 | WRITE);
-  //Giaccess(0, 0x06 | WRITE);
 }
 
 void disable_channel(const int channel) {
-  register_7 |= (1 + channel + (channel == 2));
+  __uint8_t register_7 = Giaccess(0, 0x07);
+  register_7 |= 1UL << channel;
   Giaccess(register_7, 0x07 | WRITE);
 }
 
@@ -61,7 +60,9 @@ void disable_keyboard_bell()
 
 void init_audio() {
   Supexec(disable_keyboard_bell);
-  register_7 = Giaccess(0, 0x07);
+  __uint8_t register_7 = Giaccess(0, 0x07);
+  register_7 &= 0b00111111; // Disable all noise generators and channels (if they were on)
+  Giaccess(register_7, 0x07 | WRITE);
   int c = 0;
   for (c = 0; c < 3; ++c) {
     enable_channel(c);
