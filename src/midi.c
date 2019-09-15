@@ -374,18 +374,19 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
         error("Error, unsupported event");
       }
 
-      // Unknown event
+      // Unknown event types
       else if ((event_id & 0xF0) == 0xF0) { // any other event starting with 0xF
+        printf("Found event ID 0x%#x\n", event_id);
         error("Error, found a unknown event type");
       }
 
       // Regular channel event
-      else {
+      else if ((event_id >> 7) == 1){
         const __uint8_t status = event_id;
         const __uint8_t status_bits = (status & 0xF0) >> 4;
         const __uint8_t channel_bits = status & 0x0F;
         print_debug("On channel %d - ", channel_bits);
-        if (status_bits == 0b1000) {
+        if (status_bits == 0b1000) { // 0
           const __uint8_t key_number = tracks[track_id].data[indices++];
           const __uint8_t pressure_value = tracks[track_id].data[indices++];
           print_debug("Key release '%d' with value '%d'\n", key_number, pressure_value);
@@ -393,7 +394,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
             key_pressed = -1;
           }
         }
-        else if (status_bits == 0b1001) {
+        else if (status_bits == 0b1001) { // 1
           const __uint8_t key_number = tracks[track_id].data[indices++];
           const __uint8_t pressure_value = tracks[track_id].data[indices++];
           print_debug("Key press '%d' with value '%d' \n", key_number, pressure_value);
@@ -405,34 +406,41 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
           if (key_number > stats.max_key) { stats.max_key = key_number; }
           if (key_number < stats.min_key) { stats.min_key = key_number; }
         }
-        else if (status_bits == 0b1011) {
+        else if (status_bits == 0b1010) { // 2
+          const __uint8_t key_number = tracks[track_id].data[indices++];
+          const __uint8_t pressure_value = tracks[track_id].data[indices++];
+          print_debug("Polyphonic key press '%d' with value '%d' \n", key_number, pressure_value);
+        }
+        else if (status_bits == 0b1011) { // 3
           const __uint8_t controller = tracks[track_id].data[indices++];
           const __uint8_t value = tracks[track_id].data[indices++];
           print_debug("Controller change to controller '%d' with value '%d'\n", controller, value);
         }
-        else if (status_bits == 0b1100) {
+        else if (status_bits == 0b1100) { // 4
           const __uint8_t instrument_type = tracks[track_id].data[indices++];
           print_debug("Program change to instrument '%d'\n", instrument_type);
         }
-        else if (status_bits == 0b1101) {
+        else if (status_bits == 0b1101) { // 5
           const __uint8_t pressure_value = tracks[track_id].data[indices++];
           print_debug("Channel pressure aftertouch '%d'\n", pressure_value);
         }
-        else if (status_bits == 0b1110) {
+        else if (status_bits == 0b1110) { // 6
           const __uint8_t lsbs = tracks[track_id].data[indices++];
           const __uint8_t msbs = tracks[track_id].data[indices++];
           const unsigned short pressure_value = (msbs << 7) + lsbs;
           print_debug("Pitch wheel change of '%d'\n", pressure_value);
         }
-        else if (status_bits == 0b0101) {
-          // TODO: add support for this status
-          printf("Error, unsupported status bits 0101 (5)\n");
-          error("Error, unsupported status 0101");
-        }
         else {
           printf("Error, unsupported status %d\n", status_bits);
           error("Error, unsupported status");
         }
+      }
+
+      // A pure data byte (highest of the 8 bits is not set)
+      else {
+        __uint8_t data_byte = event_id;
+        print_debug("Data byte: %d\n", data_byte);
+        // TODO: Do something with this data
       }
 
       if (indices > tracks[track_id].length) {
