@@ -256,6 +256,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
 
     // Time loop
     int time = 0;
+    __uint8_t event_id = 0x00;
     while (1) { // until the end-of-track is found in the midi, exiting through a break statement
 
       // Parse the event header
@@ -266,7 +267,18 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
       indices += length_of_vlq;
       times += delta_time;
       print_debug("   [%8d][%8d][%3d][%3d%%] Event: ", time, times, track_id, progress);
-      const __uint8_t event_id = tracks[track_id].data[indices++];
+
+      // Checks for the 'midi running status' behaviour where the previous status byte is assumed
+      const __uint8_t next_byte = tracks[track_id].data[indices];
+      if ((next_byte >> 7) == 0) {
+        // A pure data byte, assumes the status of the previous status/event bit:
+        // don't increment the indices counter here, in fact, do nothing at all.
+      }
+      else {
+        // Regular case: event ID is the byte just read, increment the counter
+        event_id = next_byte;
+        indices++;
+      }
 
       // Meta-event
       if (event_id == 0xFF) {
@@ -381,10 +393,9 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
       }
 
       // Regular channel event
-      else if ((event_id >> 7) == 1){
-        const __uint8_t status = event_id;
-        const __uint8_t status_bits = (status & 0xF0) >> 4;
-        const __uint8_t channel_bits = status & 0x0F;
+      else {
+        const __uint8_t status_bits = (event_id & 0xF0) >> 4;
+        const __uint8_t channel_bits = event_id & 0x0F;
         print_debug("On channel %d - ", channel_bits);
         if (status_bits == 0b1000) { // 0
           const __uint8_t key_number = tracks[track_id].data[indices++];
@@ -434,13 +445,6 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
           printf("Error, unsupported status %d\n", status_bits);
           error("Error, unsupported status");
         }
-      }
-
-      // A pure data byte (highest of the 8 bits is not set)
-      else {
-        __uint8_t data_byte = event_id;
-        print_debug("Data byte: %d\n", data_byte);
-        // TODO: Do something with this data
       }
 
       if (indices > tracks[track_id].length) {
