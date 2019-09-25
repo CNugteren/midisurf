@@ -95,6 +95,8 @@ int main(void) {
     // Clean-up
     for (track_id = 0; track_id < num_tracks; ++track_id) {
       free(instructions[track_id]);
+    }
+    for (track_id = 0; track_id < header.tracks; ++track_id) {
       free(tracks[track_id].data);
     }
     free(tracks);
@@ -231,7 +233,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
       // Loops over all the notes currently on screen
       int notes_index = 0;
       for (notes_index = 0; notes_index < num_notes; ++notes_index) {
-        const int full_note_index = (notes_index + notes_start_index);// % MAX_NOTES;
+        const int full_note_index = (notes_index + notes_start_index) % MAX_NOTES;
         //printf("   [%8d] Num notes: %d, note start index: %d, note at (%dx%d)\n",
         //       time, num_notes, notes_start_index,
         //       notes_data[full_note_index].x, notes_data[full_note_index].y);
