@@ -26,13 +26,13 @@
 
 void enable_channel(const int channel) {
   __uint8_t register_7 = Giaccess(0, 0x07);
-  register_7 &= ~(1UL << channel);
+  register_7 &= ~(1 << channel);
   Giaccess(register_7, 0x07 | WRITE);
 }
 
 void disable_channel(const int channel) {
   __uint8_t register_7 = Giaccess(0, 0x07);
-  register_7 |= 1UL << channel;
+  register_7 |= 1 << channel;
   Giaccess(register_7, 0x07 | WRITE);
 }
 
@@ -60,8 +60,7 @@ void disable_keyboard_bell()
 
 void init_audio() {
   Supexec(disable_keyboard_bell);
-  __uint8_t register_7 = Giaccess(0, 0x07);
-  register_7 &= 0b00111111; // Disable all noise generators and channels (if they were on)
+  __uint8_t register_7 = 0b00111111; // Disable all noise generators and channels (if they were on)
   Giaccess(register_7, 0x07 | WRITE);
   int c = 0;
   for (c = 0; c < 3; ++c) {
