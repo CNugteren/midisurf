@@ -488,10 +488,10 @@ void draw_parsing_background(OBJECT* background, const struct track_chunk* track
 }
 
 void draw_track_name(const short track_id, const __uint8_t* name, const short length) {
-  char track_name_string[19]; // Max length of the printed name
+  char track_name_string[17]; // Max length of the printed name
   track_name_string[0] = '"';
   short i = 0;
-  for (i = 0; i < length && i <= 18 - 3; ++i) { track_name_string[i + 1] = name[i]; }
+  for (i = 0; i < length && i <= 16 - 3; ++i) { track_name_string[i + 1] = name[i]; }
   track_name_string[i + 1] = '"';
   track_name_string[i + 2] = '\0';
   const short y_pos = track_id * DISPLAY_PROGRESS_Y_STEP + DISPLAY_PROGRESS_Y_OFFSET + 13;
