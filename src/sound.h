@@ -32,9 +32,9 @@ void stop_audio();
 
 //--------------------------------------------------------------------------------------------------
 
-void key_press(const __uint8_t key_number, const __uint8_t pressure_value, const int track_id);
+void key_press(const __uint8_t key_number, const __uint8_t pressure_value, const int channel);
 
-void key_release(const __uint8_t key_number, const __uint8_t pressure_value, const int track_id);
+void key_release(const int channel);
 
 //--------------------------------------------------------------------------------------------------
 #endif // _SOUND_H

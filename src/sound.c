@@ -79,14 +79,14 @@ void stop_audio() {
 
 //--------------------------------------------------------------------------------------------------
 
-void key_press(const __uint8_t key_number, const __uint8_t pressure_value, const int track_id) {
+void key_press(const __uint8_t key_number, const __uint8_t pressure_value, const int channel) {
   const __uint16_t frequency = (__uint16_t) (pow(2.0, (double)(key_number - 69) / 12) * 440);
-  set_frequency(frequency, track_id);
-  set_volume(pressure_value / 8 , track_id);
+  set_frequency(frequency, channel);
+  set_volume(pressure_value / 8 , channel);
 }
 
-void key_release(const __uint8_t key_number, const __uint8_t pressure_value, const int track_id) {
-  set_volume(0, track_id);
+void key_release(const int channel) {
+  set_volume(0, channel);
 }
 
 //--------------------------------------------------------------------------------------------------
