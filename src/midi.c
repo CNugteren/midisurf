@@ -251,6 +251,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
     int times = 0;
     int indices = 0;
     int instruction_indices = 0;
+    int prev_instruction_time = -1;
     short key_pressed = -1;
     short progress = 0;
 
@@ -409,13 +410,21 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
           const __uint8_t key_number = tracks[track_id].data[indices++];
           const __uint8_t pressure_value = tracks[track_id].data[indices++];
           print_debug("Key press '%d' with value '%d' \n", key_number, pressure_value);
-          instructions[track_id][instruction_indices].time = time;
+          int curr_instruction_time = time;
+          if (curr_instruction_time == prev_instruction_time) {
+            // Special case: two instructions at the same time, take the highest note
+            const __uint8_t prev_key = instructions[track_id][instruction_indices - 1].key;
+            if (prev_key > key_number) { time++; continue; } // Skips this instruction
+            else { instruction_indices--; } // Overwrites the previous instruction
+          }
+          instructions[track_id][instruction_indices].time = curr_instruction_time;
           instructions[track_id][instruction_indices].key = key_number;
           instructions[track_id][instruction_indices].pressure = pressure_value;
           instruction_indices++;
           key_pressed = key_number;
           if (key_number > stats.max_key) { stats.max_key = key_number; }
           if (key_number < stats.min_key) { stats.min_key = key_number; }
+          prev_instruction_time = curr_instruction_time;
         }
         else if (status_bits == 0b1010) { // 2
           const __uint8_t key_number = tracks[track_id].data[indices++];
