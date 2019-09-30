@@ -19,15 +19,16 @@ void draw_line(const short x1, const short y1, const short x2, const short y2) {
   v_pline(handle, 2, xy);
 }
 
-void draw_box(const short x, const short y, const short x2, const short y2, const short colour) {
+void draw_box(const short x, const short y, const short x2, const short y2) {
   short xy[4];
-  set_colour(colour);
   xy[0] = x; xy[1] = y; xy[2] = x2; xy[3] = y2;
   v_bar(handle, xy);
 }
 
 void clear_box(const short x, const short y, const short width, const short height) {
-  draw_box(x, y, x + width - 1, y + height - 1, 0);
+  set_colour(0);
+  draw_box(x, y, x + width - 1, y + height - 1);
+  set_colour(1);
 }
 
 void clear_buffer() {
@@ -76,7 +77,6 @@ void stop_graphics() {
 //--------------------------------------------------------------------------------------------------
 
 void draw_ball(const short x, const short y) {
-  set_colour(1); // black
   draw_line(x - 2, y - 2, x + 1, y - 2);
   draw_line(x - 3, y - 1, x + 2, y - 1);
   draw_line(x - 3, y    , x + 2, y    );
@@ -118,7 +118,6 @@ void draw_surfer(const short id, const short x, const short y) {
 
 void draw_catch(const short x_ball, const short y_ball, const short x_surfer, const short y_surfer) {
   clear_box(x_ball - 3, y_ball - 3, 6, 6);
-  set_colour(1);
 }
 
 //--------------------------------------------------------------------------------------------------

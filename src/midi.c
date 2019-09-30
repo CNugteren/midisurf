@@ -510,7 +510,7 @@ void draw_track_name(const short track_id, const __uint8_t* name, const short le
 void draw_progress_bar(const short progress_percentage, const short track_id) {
   const short y_pos = track_id * DISPLAY_PROGRESS_Y_STEP + DISPLAY_PROGRESS_Y_OFFSET;
   draw_box(DISPLAY_PROGRESS_X_OFFSET, y_pos, DISPLAY_PROGRESS_X_OFFSET + DISPLAY_PROGRESS_SPEED *
-           progress_percentage, y_pos + DISPLAY_PROGRESS_HEIGHT, 1);
+           progress_percentage, y_pos + DISPLAY_PROGRESS_HEIGHT);
 }
 
 //--------------------------------------------------------------------------------------------------

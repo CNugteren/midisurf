@@ -50,7 +50,7 @@ void draw_circle(const short x, const short y, const short radius);
 
 void draw_line(const short x1, const short y1, const short x2, const short y2);
 
-void draw_box(const short x, const short y, const short x2, const short y2, const short colour);
+void draw_box(const short x, const short y, const short x2, const short y2);
 
 void clear_box(const short x, const short y, const short width, const short height);
 
