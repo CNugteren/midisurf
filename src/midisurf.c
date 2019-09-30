@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
+#include <time.h>
 
 #include "sound.h"
 #include "graphics.h"
@@ -174,6 +175,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
 
   // Time loop of the game-play
   for (result.time = 0; result.time < stats.end_time + HISTORY_LENGTH; ++result.time) {
+    short start_time = clock(); // To make sure each loop iteration takes equal time
 
     // Parse the instructions
     for (track_id = 0; track_id < num_tracks; ++track_id) {
@@ -195,9 +197,6 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
         current_instructions[track_id] = instructions[track_id][instruction_indices[track_id]];
       }
     }
-
-    // Spend some time doing nothing to emulate the tempo of the music
-    for (i = 0; i < 400; ++i) { }
 
     // Listen for user input from the keyboard
     if (key_pressed()) {
@@ -285,6 +284,9 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
         sprintf(time_string, "%5d", result.time);
         write_text(DISPLAY_TIME_X, DISPLAY_HEIGHT_START_HALF, time_string);
       }
+
+      // Spend some time doing nothing to emulate the tempo of the music
+      while (clock() - start_time < GAMEPLAY_LOOP_MIN_CYCLES) { }
     }
 
   } // end of time while-loop

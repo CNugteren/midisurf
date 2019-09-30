@@ -15,6 +15,10 @@
 #define NUM_SURFERS 2
 #define MAX_TRACKS 3 // == number of channels supported on Atari ST
 
+// Gameplay settings
+#define GAMEPLAY_LOOP_MIN_CYCLES 8 // Speed of the game-play loop, larger is slower. Too small might
+                                   // introduce variance because computations could take more time
+
 // Make sure the following 3 are a power of 2 for better speed
 #define MAX_NOTES 32 // maximum number of notes to be displayed on screen at a single time
 #define HISTORY_LENGTH 256 // length of the look-ahead buffer of notes: determines y-resolution
