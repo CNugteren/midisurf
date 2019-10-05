@@ -93,11 +93,11 @@ struct header_chunk read_header_chunk(FILE* file) {
 
   // The actual header data
   if (fread(buffer, 2, 1, file) != 1) { error("Error reading header data #0"); }
-  chunk.format = buffer[1] + 10 * buffer[0];
+  chunk.format = buffer[1] + (buffer[0] << 8);
   if (fread(buffer, 2, 1, file) != 1) { error("Error reading header data #1"); }
-  chunk.tracks = buffer[1] + 10 * buffer[0];
+  chunk.tracks = buffer[1] + (buffer[0] << 8);
   if (fread(buffer, 2, 1, file) != 1) { error("Error reading header data #2"); }
-  __uint16_t division_value = buffer[1] + 10 * buffer[0];
+  __uint16_t division_value = buffer[1] + (buffer[0] << 8);
   chunk.division_type = division_value >> 15;  // bit 15
   if (chunk.division_type == 0) {
     chunk.ticks_per_quarter_note = division_value & 0x7FFF;
@@ -244,13 +244,13 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
   stats.max_key = 0;
   stats.end_time = 0;
 
+  // Speed/tempo related variables
+  int us_per_tick = 500000; // the default value according to spec (==120BPM)
+  short speed_up_factor = 1;
+
   // Loops over each track
   short track_id = 0;
   for (track_id = 0; track_id < num_tracks; ++track_id) {
-
-    // Speed/tempo related variables
-    int us_per_tick = 500000; // the default value according to spec (==120BPM)
-    short speed_up_factor = 1;
 
     // Initialization
     int midi_time = 0;
@@ -331,6 +331,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
                                                     tracks[track_id].data[indices + 2];
           print_debug("Tempo change to %d us per quarter-note (%d bpm per qn)", us_per_quarter_note, 60000000 / us_per_quarter_note);
           us_per_tick = us_per_quarter_note / ticks_per_quarter_note;
+          // TODO: Add support for tempo changes during the track (currently assumes a fixed tempo)
           indices += 3;
         }
 
