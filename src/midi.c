@@ -268,8 +268,10 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
 
       // Parse the event header
       const short length_of_vlq = find_length_of_vlq(&tracks[track_id].data[indices]);
-      const short delta_time = get_variable_length_quantity(&tracks[track_id].data[indices], length_of_vlq);
-      if (time < midi_time + delta_time) { time++; continue; } // Nothing happening at this time for this track
+      const int delta_time = get_variable_length_quantity(&tracks[track_id].data[indices], length_of_vlq);
+      if (time < midi_time + delta_time) {
+        time = midi_time + delta_time;  // Skips all the time in between, nothing was happening
+      }
 
       indices += length_of_vlq;
       midi_time += delta_time;
