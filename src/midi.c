@@ -28,8 +28,8 @@ static inline short find_length_of_vlq(const __uint8_t* buffer) {
   return index + 1;
 }
 
-static inline short get_variable_length_quantity(const __uint8_t* buffer, const short length) {
-  short value = 0;
+static inline int get_variable_length_quantity(const __uint8_t* buffer, const short length) {
+  int value = 0;
   short index = 0;
   for (index = 0; index < length; ++index) {
     value += buffer[index] & 0x7f;
@@ -40,9 +40,9 @@ static inline short get_variable_length_quantity(const __uint8_t* buffer, const 
   return value;
 }
 
-short parse_vlq_value(const __uint8_t* buffer, int *index) {
+int parse_vlq_value(const __uint8_t* buffer, int *index) {
   short length_of_vlq = find_length_of_vlq(&buffer[*index]);
-  const short vlq_value = get_variable_length_quantity(&buffer[*index], length_of_vlq);
+  const int vlq_value = get_variable_length_quantity(&buffer[*index], length_of_vlq);
   *index += length_of_vlq;
   return vlq_value;
 }
@@ -295,7 +295,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
 
         // Ascii meta-events (0x1 till 0x9): just print the data and continue
         if (meta_type >= 1 && meta_type <= 0xa) {
-          const short meta_length = parse_vlq_value(tracks[track_id].data, &indices);
+          const int meta_length = parse_vlq_value(tracks[track_id].data, &indices);
           if (meta_type == 0x03) {
             draw_track_name(track_id, &tracks[track_id].data[indices], meta_length);
           }
@@ -320,7 +320,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
         // End of track
         else if (meta_type == 0x2F) {
           assert(tracks[track_id].data[indices] == 0x00); indices++; // spec
-          print_debug("End-of-track");
+          print_debug("End-of-track\n");
           break;
         }
 
@@ -381,8 +381,8 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
       // Regular system event
       else if (event_id == 0xF0) {
         printf("Regular system-event - ");
-        const short length = parse_vlq_value(tracks[track_id].data, &indices);
-        short index = 0;
+        const int length = parse_vlq_value(tracks[track_id].data, &indices);
+        int index = 0;
         for (index = 0; index < length; ++index) {
           const __uint8_t value = tracks[track_id].data[indices++];
           printf("%d ", value);
