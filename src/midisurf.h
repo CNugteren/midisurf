@@ -15,9 +15,12 @@
 #define NUM_SURFERS 2
 #define MAX_TRACKS 3 // == number of channels supported on Atari ST
 
-// Gameplay settings
-#define GAMEPLAY_LOOP_MIN_CYCLES 8 // Speed of the game-play loop, larger is slower. Too small might
-                                   // introduce variance because computations could take more time
+// Speed of the game-play loop, larger is slower. Too small might introduce variance because
+// computations could take more time. The unit here is in clock-ticks of a clock that ticks at
+// 800Hz, a factor 10K slower than the CPU running at 8MHz.
+#define GAMEPLAY_LOOP_MIN_CLOCK 8
+#define CLOCK_SPEED 800 // in Hz of the measurment clock, see above
+#define GAMEPLAY_TIME_PER_LOOP_MS (1000 * GAMEPLAY_LOOP_MIN_CLOCK / CLOCK_SPEED) // in miliseconds
 
 // Make sure the following 3 are a power of 2 for better speed
 #define MAX_NOTES 32 // maximum number of notes to be displayed on screen at a single time

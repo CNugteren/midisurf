@@ -52,6 +52,7 @@ struct midistats {
 short track_selection(struct track_chunk* tracks, short num_tracks);
 
 struct midistats parse_tracks(const struct track_chunk* tracks, const short num_tracks,
+                              const short ticks_per_quarter_note,
                               struct instr** instructions, OBJECT* background);
 
 //--------------------------------------------------------------------------------------------------

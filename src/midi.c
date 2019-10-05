@@ -229,6 +229,7 @@ short track_selection(struct track_chunk* tracks, short num_tracks) {
 //--------------------------------------------------------------------------------------------------
 
 struct midistats parse_tracks(const struct track_chunk* tracks, const short num_tracks,
+                              const short ticks_per_quarter_note,
                               struct instr** instructions, OBJECT* background) {
   printf("> Parsing %d tracks:\n", num_tracks);
   if (num_tracks > 3) { error("At most 3 tracks are supported"); }
@@ -247,8 +248,12 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
   short track_id = 0;
   for (track_id = 0; track_id < num_tracks; ++track_id) {
 
+    // Speed/tempo related variables
+    int us_per_tick = 500000; // the default value according to spec (==120BPM)
+    short speed_up_factor = 1;
+
     // Initialization
-    int times = 0;
+    int midi_time = 0;
     int indices = 0;
     int instruction_indices = 0;
     int prev_instruction_time = -1;
@@ -263,11 +268,12 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
       // Parse the event header
       const short length_of_vlq = find_length_of_vlq(&tracks[track_id].data[indices]);
       const short delta_time = get_variable_length_quantity(&tracks[track_id].data[indices], length_of_vlq);
-      if (time < times + delta_time) { time++; continue; } // Nothing happening at this time for this track
+      if (time < midi_time + delta_time) { time++; continue; } // Nothing happening at this time for this track
 
       indices += length_of_vlq;
-      times += delta_time;
-      print_debug("   [%8d][%8d][%3d][%3d%%] Event: ", time, times, track_id, progress);
+      midi_time += delta_time;
+      const int time_ms = (us_per_tick * midi_time) / 1000;
+      print_debug("   [%8dms][%8d][%3d][%3d%%] Event: ", time_ms, midi_time, track_id, progress);
 
       // Checks for the 'midi running status' behaviour where the previous status byte is assumed
       const __uint8_t next_byte = tracks[track_id].data[indices];
@@ -320,10 +326,11 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
         // Tempo change
         else if (meta_type == 0x51) {
           assert(tracks[track_id].data[indices] == 0x03); indices++; // spec
-          const unsigned int tempo = (tracks[track_id].data[indices + 0] << 16) +
-                                     (tracks[track_id].data[indices + 1] << 8) +
-                                      tracks[track_id].data[indices + 2];
-          print_debug("Tempo change to %d us per quarter-note (%d bpm per qn)", tempo, 60000000 / tempo);
+          const unsigned int us_per_quarter_note = (tracks[track_id].data[indices + 0] << 16) +
+                                                   (tracks[track_id].data[indices + 1] << 8) +
+                                                    tracks[track_id].data[indices + 2];
+          print_debug("Tempo change to %d us per quarter-note (%d bpm per qn)", us_per_quarter_note, 60000000 / us_per_quarter_note);
+          us_per_tick = us_per_quarter_note / ticks_per_quarter_note;
           indices += 3;
         }
 
@@ -347,7 +354,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
           const __uint8_t denominator = tracks[track_id].data[indices++];
           const __uint8_t clocks_per_click = tracks[track_id].data[indices++];
           const __uint8_t num_32rd_notes_per_quarter_note = tracks[track_id].data[indices++];
-          print_debug("Time signature: %d/%d time, %d clocks per dotted-quarter, "
+          print_debug("Time signature: %d/(2^%d) time, %d clocks per dotted-quarter, "
                       "%d notated 32nd-notes per quarter-note",
                       numerator, denominator, clocks_per_click, num_32rd_notes_per_quarter_note);
         }
@@ -410,7 +417,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
           const __uint8_t key_number = tracks[track_id].data[indices++];
           const __uint8_t pressure_value = tracks[track_id].data[indices++];
           print_debug("Key press '%d' with value '%d' \n", key_number, pressure_value);
-          int curr_instruction_time = time;
+          int curr_instruction_time = time / speed_up_factor;
           if (curr_instruction_time == prev_instruction_time) {
             // Special case: two instructions at the same time, take the highest note
             const __uint8_t prev_key = instructions[track_id][instruction_indices - 1].key;
@@ -465,11 +472,12 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
 
       time++;
     } // end of time while-loop
-    draw_progress_bar(100, track_id);
 
     if (time > stats.end_time) {
-      stats.end_time = time; // The time found at the end of the parsing
+      stats.end_time = time / speed_up_factor; // The time found at the end of the parsing
     }
+
+    draw_progress_bar(100, track_id);
   } // end of track for-loop
 
   return stats;

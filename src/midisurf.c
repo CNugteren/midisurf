@@ -81,8 +81,8 @@ int main(void) {
     }
 
     // Midi parsing of the tracks, resulting in instructions what notes to play
-    const struct midistats stats = parse_tracks(tracks, num_tracks, instructions,
-                                                background_loading);
+    const struct midistats stats = parse_tracks(tracks, num_tracks, header.ticks_per_quarter_note,
+                                                instructions, background_loading);
 
     // Playing the game
     init_audio();
@@ -286,7 +286,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
       }
 
       // Spend some time doing nothing to emulate the tempo of the music
-      while (clock() - start_time < GAMEPLAY_LOOP_MIN_CYCLES) { }
+      while (clock() - start_time < GAMEPLAY_LOOP_MIN_CLOCK) { }
     }
 
   } // end of time while-loop
