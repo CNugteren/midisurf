@@ -332,3 +332,11 @@ void display_score(const struct game_result result) {
 }
 
 //--------------------------------------------------------------------------------------------------
+
+short get_speed_up_factor(const int us_per_tick) {
+  const short speed_up_factor = (1000 * GAMEPLAY_TIME_PER_LOOP_MS) / us_per_tick;
+  if (speed_up_factor > 1) { return speed_up_factor; }
+  return 1;
+}
+
+//--------------------------------------------------------------------------------------------------

@@ -19,7 +19,7 @@
 // computations could take more time. The unit here is in clock-ticks of a clock that ticks at
 // 800Hz, a factor 10K slower than the CPU running at 8MHz.
 #define GAMEPLAY_LOOP_MIN_CLOCK 8
-#define CLOCK_SPEED 800 // in Hz of the measurment clock, see above
+#define CLOCK_SPEED 800 // in Hz of the measurement clock, see above
 #define GAMEPLAY_TIME_PER_LOOP_MS (1000 * GAMEPLAY_LOOP_MIN_CLOCK / CLOCK_SPEED) // in miliseconds
 
 // Make sure the following 3 are a power of 2 for better speed
@@ -69,6 +69,8 @@ void move_surfer_left(const short surfer_id, short* surfer_pos_x, short* surfer_
 void move_surfer_right(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y);
 
 void display_score(const struct game_result result);
+
+short get_speed_up_factor(const int us_per_tick);
 
 //--------------------------------------------------------------------------------------------------
 #endif // _MIDISURF_H

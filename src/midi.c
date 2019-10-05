@@ -245,8 +245,8 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
   stats.end_time = 0;
 
   // Speed/tempo related variables
-  int us_per_tick = 500000; // the default value according to spec (==120BPM)
-  short speed_up_factor = 1;
+  int us_per_tick = 500000 / ticks_per_quarter_note; // the default value according to spec (==120BPM)
+  short speed_up_factor = get_speed_up_factor(us_per_tick);
 
   // Loops over each track
   short track_id = 0;
@@ -263,6 +263,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
     // Time loop
     int time = 0;
     __uint8_t event_id = 0x00;
+    print_debug("   [ real time][miditick][gametime][#tr][prgr] Track %d:\n", track_id);
     while (1) { // until the end-of-track is found in the midi, exiting through a break statement
 
       // Parse the event header
@@ -273,7 +274,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
       indices += length_of_vlq;
       midi_time += delta_time;
       const int time_ms = (us_per_tick * midi_time) / 1000;
-      print_debug("   [%8dms][%8d][%3d][%3d%%] Event: ", time_ms, midi_time, track_id, progress);
+      print_debug("   [%8dms][%8d][%8d][%3d][%3d%%] Event: ", time_ms, midi_time, midi_time / speed_up_factor, track_id, progress);
 
       // Checks for the 'midi running status' behaviour where the previous status byte is assumed
       const __uint8_t next_byte = tracks[track_id].data[indices];
@@ -331,6 +332,7 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
                                                     tracks[track_id].data[indices + 2];
           print_debug("Tempo change to %d us per quarter-note (%d bpm per qn)", us_per_quarter_note, 60000000 / us_per_quarter_note);
           us_per_tick = us_per_quarter_note / ticks_per_quarter_note;
+          speed_up_factor = get_speed_up_factor(us_per_tick);
           // TODO: Add support for tempo changes during the track (currently assumes a fixed tempo)
           indices += 3;
         }
