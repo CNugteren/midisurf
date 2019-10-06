@@ -284,10 +284,10 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
         sprintf(time_string, "%5d", result.time);
         write_text(DISPLAY_TIME_X, DISPLAY_HEIGHT_START_HALF, time_string);
       }
-
-      // Spend some time doing nothing to emulate the tempo of the music
-      while (clock() - start_time < GAMEPLAY_LOOP_MIN_CLOCK) { }
     }
+
+    // Spend some time doing nothing to emulate the tempo of the music
+    while (clock() - start_time < GAMEPLAY_LOOP_MIN_CLOCK) { }
 
   } // end of time while-loop
 

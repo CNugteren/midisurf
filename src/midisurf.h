@@ -17,16 +17,16 @@
 
 // Speed of the game-play loop, larger is slower. Too small might introduce variance because
 // computations could take more time. The unit here is in clock-ticks of a clock that ticks at
-// 800Hz, a factor 10K slower than the CPU running at 8MHz.
+// 200Hz (a lot slower than the CPU running at 8MHz).
 #define GAMEPLAY_LOOP_MIN_CLOCK 8
-#define CLOCK_SPEED 800 // in Hz of the measurement clock, see above
+#define CLOCK_SPEED 200 // == CLK_TCK (in Hz of the measurement clock, see above)
 #define GAMEPLAY_TIME_PER_LOOP_MS (1000 * GAMEPLAY_LOOP_MIN_CLOCK / CLOCK_SPEED) // in miliseconds
 
 // Make sure the following 3 are a power of 2 for better speed
-#define MAX_NOTES 32 // maximum number of notes to be displayed on screen at a single time
-#define HISTORY_LENGTH 256 // length of the look-ahead buffer of notes: determines y-resolution
-#define DISPLAY_UPDATE_FREQUENCY 4 // only update the display every n-steps
-#define DISPLAY_TIME_UPDATE_FREQUENCY 8 // only update the time every m-steps
+#define MAX_NOTES 64 // maximum number of notes to be displayed on screen at a single time
+#define HISTORY_LENGTH 64 // length of the look-ahead buffer of notes: determines y-resolution
+#define DISPLAY_UPDATE_FREQUENCY 2 // only update the display every n-steps
+#define DISPLAY_TIME_UPDATE_FREQUENCY 4 // only update the time every m-steps
 
 // Box of the actual game-play, above/below is the menu with the scores and such
 #define DISPLAY_HEIGHT_START 45
