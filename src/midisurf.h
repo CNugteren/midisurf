@@ -20,7 +20,8 @@
 // 200Hz (a lot slower than the CPU running at 8MHz).
 #define GAMEPLAY_LOOP_MIN_CLOCK 8
 #define CLOCK_SPEED 200 // == CLK_TCK (in Hz of the measurement clock, see above)
-#define GAMEPLAY_TIME_PER_LOOP_MS (1000 * GAMEPLAY_LOOP_MIN_CLOCK / CLOCK_SPEED) // in miliseconds
+#define GAMEPLAY_TIME_PER_LOOP_US ((1000 * 1000 * GAMEPLAY_LOOP_MIN_CLOCK) / CLOCK_SPEED) // in microseconds
+#define SLOW_DOWN_FACTOR 1.5 // floating point value to slow down the midi tempo, making the game more playable
 
 // Make sure the following 3 are a power of 2 for better speed
 #define MAX_NOTES 64 // maximum number of notes to be displayed on screen at a single time
