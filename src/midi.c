@@ -364,12 +364,23 @@ struct midistats parse_tracks(const struct track_chunk* tracks, const short num_
                       numerator, denominator, clocks_per_click, num_32rd_notes_per_quarter_note);
         }
 
-          // Key signature
+        // Key signature
         else if (meta_type == 0x59) {
           assert(tracks[track_id].data[indices] == 0x02); indices++; // spec
           const __uint8_t sf = tracks[track_id].data[indices++];
           const __uint8_t mi = tracks[track_id].data[indices++];
           print_debug("Key signature, sharp/flats: %d, major/minor: %d", sf, mi);
+        }
+
+        // Sequencer specific meta-event
+        else if (meta_type == 0x7f) {
+          const int length = parse_vlq_value(tracks[track_id].data, &indices);
+          print_debug("Sequencer specific meta-event of length %d: ", length);
+          int index = 0;
+          for (index = 0; index < length; ++index) {
+            const __uint8_t value = tracks[track_id].data[indices++];
+            printf("%d ", value);
+          }
         }
 
         // Unknown meta-event
