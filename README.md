@@ -36,7 +36,7 @@ Compilation
 
 Midisurf can be cross-compiled on a modern UNIX/Windows system with the [freemint Atari-ST GCC compiler](https://github.com/freemint/m68k-atari-mint-gcc) as follows:
 
-    m68k-atari-mint-gcc src/*.c -o midisurf.prg -lgem -lm
+    m68k-atari-mint-gcc src/*.c -o midisurf.prg -lgem
 
 When running it on the Atari ST or an emulator, make sure you run it as a GEM application rather than TOS (otherwise the mouse won't show).
 
