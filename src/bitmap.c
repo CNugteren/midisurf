@@ -8,11 +8,23 @@
 
 //--------------------------------------------------------------------------------------------------
 
+// Implements a poor man's "fread(file, "%hd ", value)", to be used with 'libcmini'
+short read_short_from_string(FILE* file) {
+  short value = 0;
+  char data = fgetc(file);
+  while (data != ' ' && data != '\n') { // Assumes the value ends with a whitespace or a newline
+    short number = data - '0';  // converts from char to int
+    value = (10 * value + number);
+    data = fgetc(file);
+  }
+  return value;
+}
+
+//--------------------------------------------------------------------------------------------------
+
 // Reads a type 'P4' packed binary version of a PBM file
 // (see https://en.wikipedia.org/wiki/Netpbm_format)
 OBJECT load_bitmap(const char* file_name) {
-  short width;
-  short height;
 
   // Opens the PBM file and parses the header
   FILE* file = open_file(file_name);
@@ -21,8 +33,10 @@ OBJECT load_bitmap(const char* file_name) {
   if (strcmp(temp_buffer, "P4\n") != 0) { error("Error reading PBM: Only P4 format is supported"); }
   while (fgetc(file) == '#') { while (fgetc(file) != '\n') { } } // Reads all commented lines
   fseek(file, -1, SEEK_CUR); // Go one step back
-  if (fscanf(file, "%hd ", &width) != 1) { printf("%hd\n", width); error("Error reading PBM image width"); }
-  if (fscanf(file, "%hd\n", &height) != 1) { printf("%hd\n", height); error("Error reading PBM image height"); }
+  short width = read_short_from_string(file);
+  if (width == -1) { printf("%hd\n", width); error("Error reading PBM image width"); }
+  short height = read_short_from_string(file);
+  if (height == -1) { printf("%hd\n", height); error("Error reading PBM image height"); }
   printf("> Reading PBM '%s' with dimensions %hd x %hd\n", file_name, width, height);
 
   // Read the raw data, packed as 8 pixel bits per byte or 16 per short (Atari ST BITBLK format)
