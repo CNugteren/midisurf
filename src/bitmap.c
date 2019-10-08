@@ -34,10 +34,10 @@ OBJECT load_bitmap(const char* file_name) {
   while (fgetc(file) == '#') { while (fgetc(file) != '\n') { } } // Reads all commented lines
   fseek(file, -1, SEEK_CUR); // Go one step back
   short width = read_short_from_string(file);
-  if (width == -1) { printf("%hd\n", width); error("Error reading PBM image width"); }
+  if (width == -1) { printf("%d\n", width); error("Error reading PBM image width"); }
   short height = read_short_from_string(file);
-  if (height == -1) { printf("%hd\n", height); error("Error reading PBM image height"); }
-  printf("> Reading PBM '%s' with dimensions %hd x %hd\n", file_name, width, height);
+  if (height == -1) { printf("%d\n", height); error("Error reading PBM image height"); }
+  printf("> Reading PBM '%s' with dimensions %d x %d\n", file_name, width, height);
 
   // Read the raw data, packed as 8 pixel bits per byte or 16 per short (Atari ST BITBLK format)
   if (width % BITS_PER_SHORT != 0) { error("Unsupported PBM width, must be divisible by 16"); }
