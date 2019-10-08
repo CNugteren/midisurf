@@ -18,6 +18,8 @@ The two dragons can be controlled by a single player or by two players on a sing
 
 The Atari ST's sound-chip has three channels, and as such Midisurf was implemented to work with at most three Midi tracks. If a Midi file has more tracks, the player is asked to select the tracks he or she wants to use for the game.
 
+Example Midi tracks that work well with the game are provided in the `testmidi` subfolder.
+
 
 Limitations
 -------------
@@ -26,9 +28,9 @@ The game is currently limited in the following ways:
 
 * It only runs on an Atari ST with a high-resolution (640x400 black & white) screen
 
+* Tunes are most recognizable with just the main Midi track and notes playing, so it is recommended to remove any background Midi tracks and supporting keys upfront, e.g. using a tool like [MidiEditor](https://www.midieditor.org/)
+
 * Certain features of Midi tracks are not supported yet and parsing those tracks will result in an error
-
-
 
 
 Compilation
@@ -38,15 +40,18 @@ Midisurf can be cross-compiled on a modern UNIX/Windows system with the [freemin
 
     m68k-atari-mint-gcc src/*.c -o midisurf.prg -lgem
 
+That however results in a relatively large binary (~160KB), so alternatively with [mfro0's libcmini](https://github.com/mfro0/libcmini) (v0.491 has bugs so use the master branch or a newer version when released) you can obtain a binary of around 35KB:
+
+    m68k-atari-mint-gcc -nostdlib $LIBCMINI/startup.o src/*.c -o midisurf.prg -s -L$LIBCMINI -lcmini -lgcc -lgem
+
 When running it on the Atari ST or an emulator, make sure you run it as a GEM application rather than TOS (otherwise the mouse won't show).
 
-Alternatively, for development and debugging purpose (to some extent), it can be compiled on a UNIX system by setting the `UNIX` define. For convenience, this can be done with CMake, e.g.:
+Alternatively, for development and debugging purpose (to some extent), it can be compiled and run (but without graphics, audio or gameplay) on a UNIX system by setting the `UNIX` define. For convenience, this can be done with CMake, e.g.:
 
     mkdir build && cd build
     cmake ..
     make
     ./midisurf
-
 
 
 Running Midisurf on an emulator
