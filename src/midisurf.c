@@ -174,7 +174,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
 
   // Time loop of the game-play
   for (result.time = 0; result.time < stats.end_time + HISTORY_LENGTH; ++result.time) {
-    short start_time = clock(); // To make sure each loop iteration takes equal time
+    time_t start_time = clock(); // To make sure each loop iteration takes equal time
 
     // Parse the instructions
     for (track_id = 0; track_id < num_tracks; ++track_id) {
