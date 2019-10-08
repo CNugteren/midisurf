@@ -10,3 +10,4 @@ CTestTestfile.cmake
 cmake-build-*
 *.tos
 *.prg
+ms_v*
