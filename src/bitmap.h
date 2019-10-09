@@ -13,6 +13,15 @@
 #else // UNIX (some random behaviour to make the syntax highlighter/compiler happy)
 #endif
 
+#ifndef UNIX // Atari ST
+  #define BITMAP_MENU "graphics\\menu.pbm"
+  #define BITMAP_LOADING "graphics\\loading.pbm"
+  #define BITMAP_GAMEPLAY "graphics\\gameplay.pbm"
+#else // UNIX
+  #define BITMAP_MENU "graphics/menu.pbm"
+  #define BITMAP_LOADING "graphics/loading.pbm"
+  #define BITMAP_GAMEPLAY "graphics/gameplay.pbm"
+#endif
 //--------------------------------------------------------------------------------------------------
 
 OBJECT load_bitmap(const char* file_name);

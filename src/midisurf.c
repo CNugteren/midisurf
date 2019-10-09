@@ -18,6 +18,7 @@
 int main(void) {
   appl_init();
   init_graphics();
+  clear_buffer();
 
   // Loads the resources (RSC file) for various forms (edit with MMRCP.PRG)
   if (rsrc_load("FORMS.RSC") == 0) {
@@ -25,13 +26,24 @@ int main(void) {
     return 1;
   }
 
-  // Loads the background bitmaps
+  // Loads the background bitmaps (1/3)
+  char loading_info_string[33];
+  sprintf(loading_info_string, "Loading background bitmap 1/3...");
+  write_text(20, 20, loading_info_string);
   OBJECT* background_menu = (OBJECT*) malloc(1 * sizeof(OBJECT));
-  background_menu[0] = load_bitmap("graphics/menu.pbm");
+  background_menu[0] = load_bitmap(BITMAP_MENU);
+
+  // Loads the background bitmaps (2/3)
+  sprintf(loading_info_string, "Loading background bitmap 2/3...");
+  write_text(20, 40, loading_info_string);
   OBJECT* background_loading = (OBJECT*) malloc(1 * sizeof(OBJECT));
-  background_loading[0] = load_bitmap("graphics/loading.pbm");
+  background_loading[0] = load_bitmap(BITMAP_LOADING);
+
+  // Loads the background bitmaps (3/3)
+  sprintf(loading_info_string, "Loading background bitmap 3/3...");
+  write_text(20, 60, loading_info_string);
   OBJECT* background_gameplay = (OBJECT*) malloc(1 * sizeof(OBJECT));
-  background_gameplay[0] = load_bitmap("graphics/gameplay.pbm");
+  background_gameplay[0] = load_bitmap(BITMAP_GAMEPLAY);
 
   // Sets the defaults for the file paths
   char midi_file_path[MAX_PATH_LENGTH];
