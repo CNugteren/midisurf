@@ -53,6 +53,10 @@ Alternatively, for development and debugging purpose (to some extent), it can be
     make
     ./midisurf
 
+For debugging purpose, Clang's address sanitizer can be used on a UNIX system to check for overflows and memory leaks by compiling and running as follows:
+
+    clang -g -fsanitize=address -fno-omit-frame-pointer -DUNIX src/*.c -o midisurf.unix && ./midisurf.unix && rm midisurf.unix
+
 
 Running Midisurf on an emulator
 -------------
