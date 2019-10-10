@@ -70,6 +70,7 @@ int main(void) {
 #endif
 
     // File opening and reading
+    clear_buffer();
     FILE *file = open_midi_file(midi_file_path, midi_file_name);
     struct header_chunk header = read_header_chunk(file);
     struct track_chunk *tracks = read_tracks(file, header);

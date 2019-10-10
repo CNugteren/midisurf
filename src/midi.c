@@ -146,10 +146,13 @@ struct track_chunk read_track_chunk(FILE* file) {
 
 // Calls the above function multiple times, once for each track
 struct track_chunk* read_tracks(FILE* file, struct header_chunk header) {
+  char reading_track_string[18 + 6];
   struct track_chunk* tracks = (struct track_chunk*) malloc(header.tracks * sizeof(struct track_chunk));
   short track_id = 0;
   for (track_id = 0; track_id < header.tracks; ++track_id) {
     printf("> Reading track %d - ", track_id);
+    sprintf(reading_track_string, "Reading track %3d/%d...", track_id, header.tracks);
+    write_text(20, 20, reading_track_string);
     struct track_chunk track = read_track_chunk(file);
     tracks[track_id] = track;
   }
