@@ -16,6 +16,9 @@ void remove_asterisks(char *file_path) {
         file_path[c + 1] == '.' &&
         file_path[c + 2] == '*') {
       file_path[c] = '\0';
+      if (file_path[c - 1] == '\\') { // Removes any extra '\' at the end as well
+        file_path[c - 1] = '\0';
+      }
       break;
     }
     c++;
