@@ -4,7 +4,7 @@ set -ex
 
 # The directory for releasing
 VERSION=`cat VERSION`
-RELEASE_NAME="ms_v${VERSION}"
+RELEASE_NAME="mdsrf_${VERSION}"
 mkdir -p ${RELEASE_NAME}
 
 # The binary
@@ -31,5 +31,9 @@ cp -r testmidi ${RELEASE_NAME}/
 cp README.md ${RELEASE_NAME}/
 cp LICENSE ${RELEASE_NAME}/
 
-# Also creates a tar-archive
-tar -czf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
+# Creates a zip-archive from the new folder
+zip ${RELEASE_NAME}.zip ${RELEASE_NAME}
+
+# Creates an Atari ST floppy image from the release
+rm ${RELEASE_NAME}.st
+zip2st ${RELEASE_NAME} ${RELEASE_NAME}.st
