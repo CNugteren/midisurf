@@ -262,7 +262,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
 
         // Play the sound at the bottom of the buffer
         if (notes_data[full_note_index].y >= DISPLAY_HEIGHT_END - DISPLAY_OBJECT_SIZE) {
-          key_press(notes_data[full_note_index].key, 100, notes_data[full_note_index].channel);
+          key_press(notes_data[full_note_index].key, 255, notes_data[full_note_index].channel);
 
           // Move the start of the note buffer, marking this note as finished
           num_notes--;

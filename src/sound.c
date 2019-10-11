@@ -216,7 +216,7 @@ __uint16_t frequency_lut(__uint8_t midi_number) {
 void key_press(const __uint8_t key_number, const __uint8_t pressure_value, const int channel) {
   const __uint16_t frequency = frequency_lut(key_number);
   set_frequency(frequency, channel);
-  set_volume(pressure_value / 8 , channel);
+  set_volume(pressure_value >> 5 , channel);
 }
 
 void key_release(const int channel) {
