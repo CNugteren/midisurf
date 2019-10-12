@@ -20,6 +20,10 @@ The Atari ST's sound-chip has three channels, and as such Midisurf was implement
 
 Example Midi tracks that work well with the game are provided in the `testmidi` subfolder.
 
+An example of what the game looks like:
+
+![Midisurf gameplay example](docs/gameplay.png)
+
 
 Limitations
 -------------
@@ -31,6 +35,10 @@ The game is currently limited in the following ways:
 * Tunes are most recognizable with just the main Midi track and notes playing, so it is recommended to remove any background Midi tracks and supporting keys upfront, e.g. using a tool like [MidiEditor](https://www.midieditor.org/)
 
 * Certain features of Midi tracks are not supported yet and parsing those tracks will result in an error
+
+* The Atari ST sometimes needs a reboot after the game is ended - unclear why this needed
+
+* On older versions of TOS, while selecting a Midi track, the user might have to type *.* manually
 
 
 Compilation
@@ -61,4 +69,10 @@ For debugging purpose, Clang's address sanitizer can be used on a UNIX system to
 Running Midisurf on an emulator
 -------------
 
-If you don't own an Atari ST or just want to test the game first before you write it to a floppy disk, you can run Midisurf on an Atari ST emulator such as [Hatari](https://hatari.tuxfamily.org/). After setting up the emulator, select the high resolution (640x400 screen), mount the folder with `midisurf.prg` and the other files in this repository (at least *.bpm and *.rsc), and start the program as a GEM application.
+If you don't own an Atari ST or just want to test the game first before you write it to a floppy disk, you can run Midisurf on an Atari ST emulator such as [Hatari](https://hatari.tuxfamily.org/). After setting up the emulator, select the high resolution (640x400 screen), either:
+
+* Mount one of the Atari ST image releases (`mdsrf_X.Y.st`) as floppy A or B
+
+* Mount the contents of one of the release archives (`mdsrf_X.Y.zip`) as a hard disk
+
+* Compile your own `midisurf.prg` from the repository and mount the folder as a hard disk along with the other files in this repository (at least *.bpm and *.rsc).
