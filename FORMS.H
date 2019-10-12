@@ -6,3 +6,4 @@
 #define     START 1
 #define      QUIT 4
 #define  LOADMIDI 5
+#define    REPEAT 10

@@ -27,7 +27,8 @@ void remove_asterisks(char *file_path) {
 
 //--------------------------------------------------------------------------------------------------
 
-int start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_name) {
+// See header for return codes of this function
+short start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_name) {
   show_mouse();
   clear_buffer();
 
@@ -42,7 +43,7 @@ int start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_na
 
   objc_draw(bg_text, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
-  int do_exit_program = 0;
+  short return_code = MENU_LOAD_MIDI;
   int do_exit_menu = 0;
   while (!do_exit_menu) {
 
@@ -58,15 +59,22 @@ int start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_na
       if (file_button == 1) {
         remove_asterisks(midi_file_path);
         do_exit_menu = 1; // exit menu, start the game with the specified file
+        // Enables the repeat button for next time
+        objc_change(bg_text, REPEAT, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0x0, 1);
       }
       objc_draw(bg_text, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
       objc_change(bg_text, LOADMIDI, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0x0, 1);
+    }
+    else if (button == REPEAT) {
+      do_exit_menu = 1;
+      return_code = MENU_REPEAT;
+      objc_change(bg_text, REPEAT, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0x0, 1);
     }
     else if (button == QUIT) {
       if (form_alert(2, "[2][ Are you sure you want to | "
                         "quit the program?][Yes|No]") == 1) {
         do_exit_menu = 1;
-        do_exit_program = 1;
+        return_code = MENU_EXIT_GAME;
       }
       objc_change(bg_text, QUIT, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0x0, 1);
     }
@@ -74,7 +82,7 @@ int start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_na
 
   // Clean-up
   hide_mouse();
-  return do_exit_program;
+  return return_code;
 }
 
 //--------------------------------------------------------------------------------------------------

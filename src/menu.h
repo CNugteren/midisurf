@@ -20,8 +20,11 @@
 
 void remove_asterisks(char *file_path);
 
-// Defines and handles the menu; returns a boolean whether or not to quit the whole application
-int start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_name);
+// Defines and handles the menu; return codes of the function below are:
+#define MENU_LOAD_MIDI 0
+#define MENU_EXIT_GAME 1
+#define MENU_REPEAT 2
+short start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_name);
 
 //--------------------------------------------------------------------------------------------------
 #endif // _MENU_H

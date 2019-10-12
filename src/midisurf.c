@@ -51,14 +51,13 @@ int main(void) {
   sprintf(midi_file_path, "\\");
   sprintf(midi_file_name, "*.MID");
 
-  // Loop until the game should exit
-  int do_exit_program = 0;
-  while (do_exit_program == 0) {
+  // Loop until the game exits
+  while (1) {
 
     // Handles the menu options
 #if DEBUG == 0
-    do_exit_program = start_menu(background_menu, midi_file_path, midi_file_name);
-    if (do_exit_program == 1) { break; }
+    short menu_status = start_menu(background_menu, midi_file_path, midi_file_name);
+    if (menu_status == MENU_EXIT_GAME) { break; }
 #else
     #ifndef UNIX // Atari ST
       sprintf(midi_file_path, "C:\\\\testmidi");
@@ -66,7 +65,6 @@ int main(void) {
       sprintf(midi_file_path, "testmidi");
     #endif
     sprintf(midi_file_name, "got.mid");
-    do_exit_program = 1;
 #endif
 
     // File opening and reading
@@ -112,8 +110,8 @@ int main(void) {
       free(tracks[track_id].data);
     }
     free(tracks);
-    #ifdef UNIX
-      do_exit_program = 1;
+    #if defined(UNIX) || DEBUG == 1
+      break;
     #endif
   }
 
