@@ -51,6 +51,14 @@ int main(void) {
   sprintf(midi_file_path, "\\");
   sprintf(midi_file_name, "*.MID");
 
+  // Keeps loaded tracks in memory, so declare all data-structures here already
+  short track_is_loaded = 0; // initially 0, becomes 1 after the first Midi track is loaded
+  short num_tracks = 0;
+  struct header_chunk header;
+  struct track_chunk *tracks;
+  struct instr *instructions[MAX_TRACKS];
+  struct midistats stats;
+
   // Loop until the game exits
   while (1) {
 
@@ -67,34 +75,43 @@ int main(void) {
     sprintf(midi_file_name, "got.mid");
 #endif
 
-    // File opening and reading
-    clear_buffer();
-    FILE *file = open_midi_file(midi_file_path, midi_file_name);
-    struct header_chunk header = read_header_chunk(file);
-    struct track_chunk *tracks = read_tracks(file, header);
-    close_file(file);
+    // Load and parse a new midi file
+    if (menu_status == MENU_LOAD_MIDI) {
 
-    // Track selection
-    const short num_tracks = track_selection(tracks, header.tracks);
-
-    // The data: a list of key press instructions
-    short track_id = 0;
-    struct instr *instructions[MAX_TRACKS];
-    for (track_id = 0; track_id < num_tracks; ++track_id) {
-      instructions[track_id] = (struct instr *) malloc(tracks[track_id].length * sizeof(struct instr));
-      int pos = 0;
-      for (pos = 0; pos < tracks[track_id].length; ++pos) {
-        instructions[track_id][pos].time = -1;
-        instructions[track_id][pos].key = 0;
-        instructions[track_id][pos].pressure = 0;
+      // Clean-up any previously loaded track
+      if (track_is_loaded) {
+        clean_up_track_data(instructions, num_tracks, header, tracks);
       }
+
+      // File opening and reading
+      clear_buffer();
+      FILE *file = open_midi_file(midi_file_path, midi_file_name);
+      header = read_header_chunk(file);
+      tracks = read_tracks(file, header);
+      close_file(file);
+
+      // Track selection
+      num_tracks = track_selection(tracks, header.tracks);
+
+      // The data: a list of key press instructions
+      short track_id = 0;
+      for (track_id = 0; track_id < num_tracks; ++track_id) {
+        instructions[track_id] = (struct instr *) malloc(tracks[track_id].length * sizeof(struct instr));
+        int pos = 0;
+        for (pos = 0; pos < tracks[track_id].length; ++pos) {
+          instructions[track_id][pos].time = -1;
+          instructions[track_id][pos].key = 0;
+          instructions[track_id][pos].pressure = 0;
+        }
+      }
+
+      // Midi parsing of the tracks, resulting in instructions what notes to play
+      stats = parse_tracks(tracks, num_tracks, header.ticks_per_quarter_note,
+                           instructions, background_loading);
+      track_is_loaded = 1;
     }
 
-    // Midi parsing of the tracks, resulting in instructions what notes to play
-    const struct midistats stats = parse_tracks(tracks, num_tracks, header.ticks_per_quarter_note,
-                                                instructions, background_loading);
-
-    // Playing the game
+    // Play the game
     init_audio();
     struct game_result result = gameplay(stats, num_tracks, instructions, background_gameplay);
     stop_audio();
@@ -102,20 +119,15 @@ int main(void) {
     // Present the score
     display_score(result);
 
-    // Clean-up
-    for (track_id = 0; track_id < num_tracks; ++track_id) {
-      free(instructions[track_id]);
-    }
-    for (track_id = 0; track_id < header.tracks; ++track_id) {
-      free(tracks[track_id].data);
-    }
-    free(tracks);
     #if defined(UNIX) || DEBUG == 1
       break;
     #endif
   }
 
   // End of the program
+  if (track_is_loaded) {
+    clean_up_track_data(instructions, num_tracks, header, tracks);
+  }
   free_bitmap(background_menu);
   free_bitmap(background_loading);
   free_bitmap(background_gameplay);
@@ -134,7 +146,7 @@ struct note_info {
   int key;
 };
 
-struct game_result gameplay(const struct midistats stats, const int num_tracks,
+struct game_result gameplay(const struct midistats stats, const short num_tracks,
                             struct instr** instructions, OBJECT* background_gameplay) {
   printf("> Playing game (with %d tracks)\n", num_tracks);
   assert(num_tracks <= MAX_TRACKS);
@@ -163,7 +175,7 @@ struct game_result gameplay(const struct midistats stats, const int num_tracks,
   // Initialization of the other data-structures
   struct instr current_instructions[MAX_TRACKS];
   int* instruction_indices = (int *) malloc(num_tracks * sizeof(int));
-  int track_id = 0;
+  short track_id = 0;
   for (track_id = 0; track_id < num_tracks; ++track_id) {
     instruction_indices[track_id] = 0;
     current_instructions[track_id] = instructions[track_id][0];
@@ -347,6 +359,21 @@ short get_speed_up_factor(const int us_per_tick) {
   const short speed_up_factor = GAMEPLAY_TIME_PER_LOOP_US / adjusted_us_per_tick;
   if (speed_up_factor > 1) { return speed_up_factor; }
   return 1;
+}
+
+//--------------------------------------------------------------------------------------------------
+
+void clean_up_track_data(struct instr *instructions[MAX_TRACKS], const short num_tracks,
+                         const struct header_chunk header, struct track_chunk *tracks) {
+  short track_id = 0;
+  for (track_id = 0; track_id < num_tracks; ++track_id) {
+    free(instructions[track_id]);
+  }
+  for (track_id = 0; track_id < header.tracks; ++track_id) {
+    free(tracks[track_id].data);
+  }
+  free(tracks);
+
 }
 
 //--------------------------------------------------------------------------------------------------

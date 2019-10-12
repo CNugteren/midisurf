@@ -63,7 +63,7 @@ struct game_result {
 };
 
 // Plays the game and returns whether (1) or not (0) to stop
-struct game_result gameplay(const struct midistats stats, const int num_tracks,
+struct game_result gameplay(const struct midistats stats, const short num_tracks,
                             struct instr** instructions, OBJECT* background_gameplay);
 
 void move_surfer_left(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y);
@@ -72,6 +72,9 @@ void move_surfer_right(const short surfer_id, short* surfer_pos_x, short* surfer
 void display_score(const struct game_result result);
 
 short get_speed_up_factor(const int us_per_tick);
+
+void clean_up_track_data(struct instr *instructions[MAX_TRACKS], const short num_tracks,
+                         const struct header_chunk header, struct track_chunk *tracks);
 
 //--------------------------------------------------------------------------------------------------
 #endif // _MIDISURF_H
