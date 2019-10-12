@@ -99,7 +99,6 @@ int main(void) {
     // Playing the game
     init_audio();
     struct game_result result = gameplay(stats, num_tracks, instructions, background_gameplay);
-    do_exit_program = result.exit;
     stop_audio();
 
     // Present the score

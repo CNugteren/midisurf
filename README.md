@@ -69,7 +69,7 @@ For debugging purpose, Clang's address sanitizer can be used on a UNIX system to
 Running Midisurf on an emulator
 -------------
 
-If you don't own an Atari ST or just want to test the game first before you write it to a floppy disk, you can run Midisurf on an Atari ST emulator such as [Hatari](https://hatari.tuxfamily.org/). After setting up the emulator, select the high resolution (640x400 screen), either:
+If you don't own an Atari ST or just want to test the game first before you write it to a floppy disk, you can run Midisurf on an Atari ST emulator such as [Hatari](https://hatari.tuxfamily.org/). After setting up the emulator, select the high resolution screen (640x400), and then either:
 
 * Mount one of the Atari ST image releases (`mdsrf_X.Y.st`) as floppy A or B
 
