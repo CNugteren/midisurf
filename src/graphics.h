@@ -81,5 +81,7 @@ void draw_surfer(const short id, const short x, const short y);
 
 void draw_catch(const short x_ball, const short y_ball, const short x_surfer, const short y_surfer);
 
+void clear_catch(const short x_ball, const short y_ball, const short x_surfer, const short y_surfer);
+
 //--------------------------------------------------------------------------------------------------
 #endif // _GRAPHICS_H

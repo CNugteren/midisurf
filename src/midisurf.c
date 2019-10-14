@@ -147,6 +147,14 @@ struct note_info {
   int key;
 };
 
+struct catch_data {
+  short catched; // boolean whether or not the ball was catched
+  short x_ball;
+  short y_ball;
+  short x_surfer;
+  short y_surfer;
+};
+
 struct game_result gameplay(const struct midistats stats, const short num_tracks,
                             struct instr** instructions, OBJECT* background_gameplay) {
   printf("> Playing game (with %d tracks)\n", num_tracks);
@@ -189,10 +197,12 @@ struct game_result gameplay(const struct midistats stats, const short num_tracks
   // Display the surfers
   short surfer_pos_x[NUM_SURFERS];
   short surfer_pos_y[NUM_SURFERS];
+  struct catch_data catches[NUM_SURFERS];
   for (surfer_id = 0; surfer_id < NUM_SURFERS; ++surfer_id) {
     surfer_pos_x[surfer_id] = DISPLAY_WIDTH / 2;
     surfer_pos_y[surfer_id] = DISPLAY_SURFER(surfer_id);
     draw_surfer(surfer_id, surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
+    catches->catched = 0;
   }
 
   // Time loop of the game-play
@@ -283,8 +293,13 @@ struct game_result gameplay(const struct midistats stats, const short num_tracks
           for (surfer_id = 0; surfer_id < NUM_SURFERS; ++surfer_id) {
             const int x_difference = abs(notes_data[full_note_index].x - surfer_pos_x[surfer_id]);
             if (x_difference < SURFER_TOLERANCE) {
-              draw_catch(notes_data[full_note_index].x, notes_data[full_note_index].y,
-                         surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
+              catches[surfer_id].catched = 1;
+              catches[surfer_id].x_ball = notes_data[full_note_index].x;
+              catches[surfer_id].y_ball = notes_data[full_note_index].y;
+              catches[surfer_id].x_surfer = surfer_pos_x[surfer_id];
+              catches[surfer_id].y_surfer = surfer_pos_y[surfer_id];
+              draw_catch(catches[surfer_id].x_ball, catches[surfer_id].y_ball,
+                         catches[surfer_id].x_surfer, catches[surfer_id].y_surfer);
 
               // Updates the score and displays it on screen
               result.scores[surfer_id] += 10;
@@ -312,6 +327,15 @@ struct game_result gameplay(const struct midistats stats, const short num_tracks
 
     // Spend some time doing nothing to emulate the tempo of the music
     while (clock() - start_time < GAMEPLAY_LOOP_MIN_CLOCK) { }
+
+    // Clears the drawings of the catches (if any)
+    for (surfer_id = 0; surfer_id < NUM_SURFERS; ++surfer_id) {
+      if (catches[surfer_id].catched == 1) {
+        clear_catch(catches[surfer_id].x_ball, catches[surfer_id].y_ball,
+                    catches[surfer_id].x_surfer, catches[surfer_id].y_surfer);
+        catches[surfer_id].catched = 0;
+      }
+    }
 
   } // end of time while-loop
 

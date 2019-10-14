@@ -117,7 +117,26 @@ void draw_surfer(const short id, const short x, const short y) {
 }
 
 void draw_catch(const short x_ball, const short y_ball, const short x_surfer, const short y_surfer) {
+
+  // Lines from the ball downwards
+  draw_line(x_ball - 2, y_ball + 5, x_ball - 2, y_ball + 18);
+  draw_line(x_ball + 1, y_ball + 5, x_ball + 1, y_ball + 18);
+
+  // Lines from the surfer in all directions
+  draw_line(x_surfer + 4, y_surfer + 4, x_surfer + 10, y_surfer + 10);
+  draw_line(x_surfer - 4, y_surfer + 4, x_surfer - 10, y_surfer + 10);
+  draw_line(x_surfer + 4, y_surfer - 4, x_surfer + 10, y_surfer - 10);
+  draw_line(x_surfer - 4, y_surfer - 4, x_surfer - 10, y_surfer - 10);
+
+  // Clears the ball
   clear_box(x_ball - 3, y_ball - 3, 6, 6);
+}
+
+void clear_catch(const short x_ball, const short y_ball, const short x_surfer, const short y_surfer) {
+  // Clears the above graphics again
+  clear_box(x_surfer - 10, y_surfer + 4, 10 + 10 + 1, 10 - 4 + 1);
+  clear_box(x_surfer - 10, y_surfer - 10, 10 + 10 + 1, 10 - 4 + 1);
+  clear_box(x_ball - 2, y_ball + 12, 2 + 1 + 1, 18 - 8 + 1);
 }
 
 //--------------------------------------------------------------------------------------------------
