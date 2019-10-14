@@ -38,7 +38,7 @@
 
 // Surfer properties
 #define DISPLAY_SURFER(id) (DISPLAY_HEIGHT - 20 - 20 * id)
-#define DISPLAY_SURFER_WIDTH 18 // the max width of the surfer
+#define DISPLAY_SURFER_WIDTH 20 // the max width of the surfer
 #define DISPLAY_SURFER_HEIGHT 6 // the max width of the surfer
 #define SURFER_SPEED 14 // the x-movement every key press
 #define SURFER_TOLERANCE 16 // x-tolerance for both + and - of the surfer to hit a note to score

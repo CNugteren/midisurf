@@ -95,24 +95,24 @@ void draw_surfer(const short id, const short x, const short y) {
   if (id == 0) {
     // Dragon 0: 'Kalessin'
     draw_line(x, y, x - 1, y - 3);
-    draw_line(x - 8, y - 1, x - 2, y + 2);
-    draw_line(x - 7, y - 2, x - 2, y + 2);
+    draw_line(x - 10, y - 1, x - 2, y + 2);
+    draw_line(x - 9, y - 2, x - 2, y + 2);
     draw_line(x - 3, y + 2, x + 1, y - 3);
-    draw_line(x + 1, y + 2, x + 8, y - 3);
-    draw_line(x + 1, y + 1, x + 6, y - 3);
-    draw_line(x + 6, y - 2, x + 8, y - 3);
+    draw_line(x + 1, y + 2, x + 10, y - 3);
+    draw_line(x + 1, y + 1, x + 7, y - 3);
+    draw_line(x + 7, y - 2, x + 10, y - 3);
   }
   else {
     // Dragon 1: Orm Embar
-    draw_line(x - 8, y - 3, x - 3, y + 2);
-    draw_line(x - 7, y - 3, x - 4, y + 2);
-    draw_line(x - 6, y, x + 4, y);
-    draw_line(x - 7, y - 1, x - 1, y - 1);
+    draw_line(x - 10, y - 3, x - 3, y + 2);
+    draw_line(x - 9, y - 3, x - 5, y + 2);
+    draw_line(x - 7, y, x + 5, y);
+    draw_line(x - 9, y - 1, x - 1, y - 1);
     draw_line(x - 1, y - 3, x + 2, y + 2);
     draw_line(x, y - 3, x + 3, y + 2);
-    draw_line(x + 2, y + 1, x + 5, y - 3);
-    draw_line(x + 5, y - 3, x + 8, y - 1);
-    draw_line(x + 8, y - 1, x + 3, y - 1);
+    draw_line(x + 2, y + 1, x + 6, y - 3);
+    draw_line(x + 6, y - 3, x + 10, y - 1);
+    draw_line(x + 10, y - 1, x + 3, y - 1);
   }
 }
 

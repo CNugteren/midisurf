@@ -73,6 +73,7 @@ int main(void) {
       sprintf(midi_file_path, "testmidi");
     #endif
     sprintf(midi_file_name, "got.mid");
+    short menu_status = MENU_LOAD_MIDI;
 #endif
 
     // Load and parse a new midi file
@@ -278,12 +279,14 @@ struct game_result gameplay(const struct midistats stats, const short num_tracks
           notes_start_index++;
           if (notes_start_index > MAX_NOTES) { notes_start_index = 0; }
 
-          // Updates the score and displays it on screen
+          // Handle the catching of the note by the surfer(s)
           for (surfer_id = 0; surfer_id < NUM_SURFERS; ++surfer_id) {
             const int x_difference = abs(notes_data[full_note_index].x - surfer_pos_x[surfer_id]);
             if (x_difference < SURFER_TOLERANCE) {
               draw_catch(notes_data[full_note_index].x, notes_data[full_note_index].y,
                          surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
+
+              // Updates the score and displays it on screen
               result.scores[surfer_id] += 10;
               char score_string[6];
               sprintf(score_string, "%5d", result.scores[surfer_id]);
@@ -323,7 +326,7 @@ struct game_result gameplay(const struct midistats stats, const short num_tracks
 void move_surfer_left(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y) {
   clear_box(surfer_pos_x[surfer_id] - (DISPLAY_SURFER_WIDTH / 2),
             surfer_pos_y[surfer_id] - (DISPLAY_SURFER_HEIGHT / 2),
-            DISPLAY_SURFER_WIDTH, DISPLAY_SURFER_HEIGHT);
+            DISPLAY_SURFER_WIDTH + 1, DISPLAY_SURFER_HEIGHT);
   surfer_pos_x[surfer_id] -= SURFER_SPEED;
   if (surfer_pos_x[surfer_id] <= DISPLAY_WIDTH_START) {
     surfer_pos_x[surfer_id] = DISPLAY_WIDTH_START;
