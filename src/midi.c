@@ -11,12 +11,6 @@
 #include "bitmap.h"
 #include "menu.h"
 
-// Debugging print statements
-#ifndef UNIX // ATARI ST
-  #define print_debug //printf
-#else // UNIX
-  #define print_debug printf
-#endif
 
 //--------------------------------------------------------------------------------------------------
 

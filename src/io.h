@@ -28,6 +28,10 @@
 
 FILE* open_midi_file(const char* midi_file_path, const char* midi_file_name);
 
+FILE* open_high_score_file(const char* file_name);
+
+void create_new_file_if_not_exists(const char* file_name);
+
 FILE* open_file(const char* file_name);
 
 void close_file(FILE* file_handle);

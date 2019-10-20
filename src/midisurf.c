@@ -12,6 +12,7 @@
 #include "io.h"
 #include "menu.h"
 #include "bitmap.h"
+#include "scores.h"
 
 //--------------------------------------------------------------------------------------------------
 
@@ -119,6 +120,9 @@ int main(void) {
 
     // Present the score
     display_score(result);
+    if (result.exit == 0) {
+      handle_high_score(result, midi_file_name);
+    }
 
     #if defined(UNIX) || DEBUG == 1
       break;
@@ -367,16 +371,6 @@ void move_surfer_right(const short surfer_id, short* surfer_pos_x, short* surfer
     surfer_pos_x[surfer_id] = DISPLAY_WIDTH_END;
   }
   draw_surfer(surfer_id, surfer_pos_x[surfer_id], surfer_pos_y[surfer_id]);
-}
-
-//--------------------------------------------------------------------------------------------------
-
-void display_score(const struct game_result result) {
-  char string[80 + 8 + 8 + 8];
-  sprintf(string, "[1][ Kalessin scored %d points | Orm Embar scored %d points | "
-                  "after %d ticks][Hurray!]",
-          result.scores[0], result.scores[1], result.time);
-  form_alert(1, string);
 }
 
 //--------------------------------------------------------------------------------------------------

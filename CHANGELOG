@@ -3,6 +3,7 @@ Next version (under development)
 - Pressing the escape key now returns the game to the main menu
 - Added a 'repeat' button to repeat the last song played
 - Added graphics to visualise the catching of a note by one of the dragons
+- Added simple high-score system
 
 MidiSurf 1.0 (2019-10-12)
 - Initial release

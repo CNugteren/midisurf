@@ -16,6 +16,17 @@ FILE* open_midi_file(const char* midi_file_path, const char* midi_file_name) {
   return open_file(file_name);
 }
 
+FILE* open_high_score_file(const char* file_name) {
+  printf("> Opening file: %s\n", file_name);
+  FILE *file = fopen(file_name, "r+");
+  return file;
+}
+
+void create_new_file_if_not_exists(const char* file_name) {
+  FILE *file = fopen(file_name, "a");
+  if (file >= 0) { fclose(file); }
+}
+
 FILE* open_file(const char* file_name) {
   printf("> Opening file: %s\n", file_name);
   FILE* file = fopen(file_name, "rb");

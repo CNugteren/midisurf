@@ -3,11 +3,19 @@
 #define _MIDISURF_H
 
 #include "midi.h"
+#include "io.h"
 
 // Resources
 #include "../FORMS.H"
 
 #define DEBUG 0
+
+// Debugging print statements
+#ifndef UNIX // ATARI ST
+  #define print_debug //printf
+#else // UNIX
+  #define print_debug printf
+#endif
 
 //--------------------------------------------------------------------------------------------------
 
@@ -68,8 +76,6 @@ struct game_result gameplay(const struct midistats stats, const short num_tracks
 
 void move_surfer_left(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y);
 void move_surfer_right(const short surfer_id, short* surfer_pos_x, short* surfer_pos_y);
-
-void display_score(const struct game_result result);
 
 short get_speed_up_factor(const int us_per_tick);
 
