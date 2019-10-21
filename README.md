@@ -24,6 +24,8 @@ An example of what the game looks like:
 
 ![Midisurf gameplay example](docs/gameplay.png)
 
+Or watch the [Midisurf gameplay video](docs/gameplay.mp4).
+
 
 Limitations
 -------------
