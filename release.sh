@@ -35,5 +35,5 @@ cp LICENSE ${RELEASE_NAME}/
 zip ${RELEASE_NAME}.zip ${RELEASE_NAME}
 
 # Creates an Atari ST floppy image from the release
-rm ${RELEASE_NAME}.st
+rm -f ${RELEASE_NAME}.st
 zip2st ${RELEASE_NAME} ${RELEASE_NAME}.st
