@@ -32,7 +32,7 @@ cp README.md ${RELEASE_NAME}/
 cp LICENSE ${RELEASE_NAME}/
 
 # Creates a zip-archive from the new folder
-zip ${RELEASE_NAME}.zip ${RELEASE_NAME}
+zip ${RELEASE_NAME}.zip ${RELEASE_NAME}/*
 
 # Creates an Atari ST floppy image from the release
 rm -f ${RELEASE_NAME}.st
