@@ -18,7 +18,7 @@ The two dragons can be controlled by a single player or by two players on a sing
 
 The Atari ST's sound-chip has three channels, and as such Midisurf was implemented to work with at most three Midi tracks. If a Midi file has more tracks, the player is asked to select the tracks he or she wants to use for the game.
 
-Example Midi tracks that work well with the game are provided in the `testmidi` subfolder.
+Example Midi tracks that work well with the game are provided in the `testmidi` subfolder, see [here](testmidi/README.md) for more information.
 
 An example of what the game looks like:
 
