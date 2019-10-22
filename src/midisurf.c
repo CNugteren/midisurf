@@ -49,7 +49,7 @@ int main(void) {
   // Sets the defaults for the file paths
   char midi_file_path[MAX_PATH_LENGTH];
   char midi_file_name[MAX_FILE_NAME_LENGTH];
-  sprintf(midi_file_path, "\\");
+  sprintf(midi_file_path, "\\TESTMIDI");
   sprintf(midi_file_name, "*.MID");
 
   // Keeps loaded tracks in memory, so declare all data-structures here already

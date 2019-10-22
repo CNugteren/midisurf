@@ -55,6 +55,7 @@ short start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_
       form_alert(1, "[1][ Next, please specify the | location of the MIDI file | "
                     "to play the game with.][OK]");
       short file_button = 0;
+      sprintf(midi_file_path, "%s\\*.*", midi_file_path); // add a '\*.*' at the end of the path
       fsel_input(midi_file_path, midi_file_name, &file_button);
       if (file_button == 1) {
         remove_asterisks(midi_file_path);

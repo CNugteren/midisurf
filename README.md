@@ -40,8 +40,6 @@ The game is currently limited in the following ways:
 
 * The Atari ST sometimes needs a reboot after the game is ended - unclear why this needed
 
-* On older versions of TOS, while selecting a Midi track, the user might have to type *.* manually
-
 
 Compilation
 -------------
