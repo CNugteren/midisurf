@@ -510,7 +510,7 @@ void draw_parsing_background(OBJECT* background, const struct track_chunk* track
   short track_id = 0;
   for (track_id = 0; track_id < num_tracks; ++track_id) {
     const short track_length = tracks[track_id].length;
-    char track_info_string[17 + 2 + 5];
+    char track_info_string[18 + 2 + 5];
     sprintf(track_info_string, "Track #%02d (length %d)", track_id, track_length);
     const short y_pos = track_id * DISPLAY_PROGRESS_Y_STEP + DISPLAY_PROGRESS_Y_OFFSET + 13;
     write_text(DISPLAY_PROGRESS_X_TEXT, y_pos, track_info_string);
