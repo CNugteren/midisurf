@@ -26,6 +26,7 @@ cp graphics/*.pbm ${RELEASE_NAME}/graphics
 
 # The test audio
 cp -r testmidi ${RELEASE_NAME}/
+rm -f ${RELEASE_NAME}/README.md
 
 # Some auxiliary files
 cp README.md ${RELEASE_NAME}/
