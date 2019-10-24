@@ -7,22 +7,44 @@
 
 short handle; // graphics handle
 
+#ifdef UNIX
+  short buffer[DISPLAY_WIDTH][DISPLAY_HEIGHT];
+#endif
+
 //--------------------------------------------------------------------------------------------------
 
 void draw_circle(const short x, const short y, const short radius) {
-  v_circle(handle, (radius + x) % DISPLAY_HEIGHT, (radius + y) % DISPLAY_WIDTH, radius);
+  #ifndef UNIX // Atari ST
+    v_circle(handle, (radius + x) % DISPLAY_WIDTH, (radius + y) % DISPLAY_HEIGHT, radius);
+  #else // UNIX
+    buffer[(radius + x) % DISPLAY_WIDTH][(radius + y) % DISPLAY_HEIGHT] = 1;
+  #endif
 }
 
 void draw_line(const short x1, const short y1, const short x2, const short y2) {
   short xy[4];
   xy[0] = x1; xy[1] = y1; xy[2] = x2; xy[3] = y2;
-  v_pline(handle, 2, xy);
+  #ifndef UNIX // Atari ST
+    v_pline(handle, 2, xy);
+  #else // UNIX
+    buffer[xy[0]][xy[1]] = 1;
+    buffer[xy[2]][xy[3]] = 1;
+  #endif
 }
 
-void draw_box(const short x, const short y, const short x2, const short y2) {
+void draw_box(const short x1, const short y1, const short x2, const short y2) {
   short xy[4];
-  xy[0] = x; xy[1] = y; xy[2] = x2; xy[3] = y2;
-  v_bar(handle, xy);
+  xy[0] = x1; xy[1] = y1; xy[2] = x2; xy[3] = y2;
+  #ifndef UNIX // Atari ST
+    v_bar(handle, xy);
+  #else // UNIX
+    short x, y;
+    for (x = xy[0]; x < xy[2]; ++x) {
+      for (y = xy[1]; y < xy[3]; ++y) {
+        buffer[x][y] = 1;
+      }
+    }
+  #endif
 }
 
 void clear_box(const short x, const short y, const short width, const short height) {
@@ -34,7 +56,16 @@ void clear_box(const short x, const short y, const short width, const short heig
 void clear_buffer() {
   set_colour(0);
   short rect[4]; rect[0] = 0; rect[1] = 0; rect[2] = DISPLAY_WIDTH; rect[3] = DISPLAY_HEIGHT;
-  vr_recfl(handle, rect);
+  #ifndef UNIX // Atari ST
+    vr_recfl(handle, rect);
+  #else // UNIX
+    short x, y;
+    for (x = rect[0]; x < rect[2]; ++x) {
+      for (y = rect[1]; y < rect[3]; ++y) {
+        buffer[x][y] = 1;
+      }
+    }
+  #endif
   set_colour(1);
 }
 
@@ -43,7 +74,11 @@ void set_colour(const short value) {
 }
 
 void write_text(const short x, const short y, const char* text) {
-  v_gtext(handle, x, y, text);
+  #ifndef UNIX // Atari ST
+    v_gtext(handle, x, y, text);
+  #else // UNIX
+    buffer[x][y] = 1;
+  #endif
 }
 
 void hide_mouse() {

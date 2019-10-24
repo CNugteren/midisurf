@@ -22,12 +22,7 @@
 
   #define v_opnvwk(a, b, c)
   #define v_clrwk(a)
-  #define v_circle(a, b, c, d)
-  #define v_pline(a, b, c)
-  #define v_bar(a, b)
   #define vsf_color(a, b)
-  #define v_gtext(a, b, c, d)
-  #define vr_recfl(a, b)
 
   #define objc_draw(a, b, c, d, e, f, g) a = NULL
   #define objc_change(a, b, c, d, e, f, g, h, i) a = NULL
@@ -49,7 +44,7 @@ void draw_circle(const short x, const short y, const short radius);
 
 void draw_line(const short x1, const short y1, const short x2, const short y2);
 
-void draw_box(const short x, const short y, const short x2, const short y2);
+void draw_box(const short x1, const short y1, const short x2, const short y2);
 
 void clear_box(const short x, const short y, const short width, const short height);
 
