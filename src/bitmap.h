@@ -24,9 +24,15 @@
     #define BITMAP_GAMEPLAY "graphics\\game_l.pbm"
   #endif
 #else // UNIX
-  #define BITMAP_MENU "graphics/menu.pbm"
-  #define BITMAP_LOADING "graphics/loading.pbm"
-  #define BITMAP_GAMEPLAY "graphics/gameplay.pbm"
+  #ifdef HIGH_RES
+    #define BITMAP_MENU "graphics/menu_h.pbm"
+    #define BITMAP_LOADING "graphics/load_h.pbm"
+    #define BITMAP_GAMEPLAY "graphics/game_h.pbm"
+  #else // LOW_RES
+    #define BITMAP_MENU "graphics/menu_l.pbm"
+    #define BITMAP_LOADING "graphics/load_l.pbm"
+    #define BITMAP_GAMEPLAY "graphics/game_l.pbm"
+  #endif
 #endif
 //--------------------------------------------------------------------------------------------------
 
