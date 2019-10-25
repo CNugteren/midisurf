@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.7)
 project("midisurf" C)
 
-add_definitions(-DUNIX)
+add_definitions(-DUNIX -DHIGH_RES)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 

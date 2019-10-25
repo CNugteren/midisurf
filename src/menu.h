@@ -18,6 +18,14 @@
 
 //--------------------------------------------------------------------------------------------------
 
+#ifdef HIGH_RES
+  #define MENU_MAIN_X 180
+  #define MENU_MAIN_Y 100
+#else // LOW_RES
+  #define MENU_MAIN_X 10
+  #define MENU_MAIN_Y 50
+#endif
+
 void remove_asterisks(char *file_path);
 
 // Defines and handles the menu; return codes of the function below are:

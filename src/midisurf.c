@@ -308,7 +308,7 @@ struct game_result gameplay(const struct midistats stats, const short num_tracks
               // Updates the score and displays it on screen
               result.scores[surfer_id] += 10;
               char score_string[6];
-              sprintf(score_string, "%5d", result.scores[surfer_id]);
+              sprintf(score_string, DISPLAY_SCORE_FORMAT, result.scores[surfer_id]);
               write_text(DISPLAY_SCORE_X(surfer_id), DISPLAY_SCORE_Y, score_string);
             }
           }
@@ -320,7 +320,7 @@ struct game_result gameplay(const struct midistats stats, const short num_tracks
         }
       }
 
-      // Displays the current time and score in the top/bottom-right
+      // Displays the current time in the top-right
       const int time_update = (result.time % DISPLAY_TIME_UPDATE_FREQUENCY == 0);
       if (time_update) {
         char time_string[6];

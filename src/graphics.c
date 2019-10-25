@@ -152,6 +152,7 @@ void draw_surfer(const short id, const short x, const short y) {
 }
 
 void draw_catch(const short x_ball, const short y_ball, const short x_surfer, const short y_surfer) {
+  // TODO: Make nice also in low-res mode
 
   // Lines from the ball downwards
   draw_line(x_ball - 2, y_ball + 5, x_ball - 2, y_ball + 18);
@@ -168,6 +169,7 @@ void draw_catch(const short x_ball, const short y_ball, const short x_surfer, co
 }
 
 void clear_catch(const short x_ball, const short y_ball, const short x_surfer, const short y_surfer) {
+  // TODO: Make nice also in low-res mode
   // Clears the above graphics again
   clear_box(x_surfer - 10, y_surfer + 4, 10 + 10 + 1, 10 - 4 + 1);
   clear_box(x_surfer - 10, y_surfer - 10, 10 + 10 + 1, 10 - 4 + 1);

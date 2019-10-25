@@ -66,14 +66,24 @@ void draw_track_name(const short track_id, const __uint8_t* name, const short le
 void draw_progress_bar(const short progress_percentage, const short track_id);
 
 // Display variables regarding midi parsing
-#define DISPLAY_PROGRESS_X_TEXT 30 // Where the track info text is written
-#define DISPLAY_PROGRESS_X_NAME 230 // Where the (optional) track name is written
-#define DISPLAY_PROGRESS_X_OFFSET 370 // Where the start of the first progress bar is
-#define DISPLAY_PROGRESS_Y_OFFSET 60 // Where the start of the first progress bar is
-#define DISPLAY_PROGRESS_Y_STEP 35 // Step from start of one progress bar to the start of the next
-#define DISPLAY_PROGRESS_HEIGHT 15 // Height of the progress bar
-#define DISPLAY_PROGRESS_SPEED 2 // Speed at which the progress bar grows in pixels per percent
-
+#ifdef HIGH_RES
+  #define DISPLAY_PROGRESS_X_TEXT 30 // Where the track info text is written
+  #define DISPLAY_PROGRESS_Y_TEXT 35 // Where the track info text is written
+  #define DISPLAY_PROGRESS_X_NAME 230 // Where the (optional) track name is written
+  #define DISPLAY_PROGRESS_X_OFFSET 370 // Where the start of the first progress bar is
+  #define DISPLAY_PROGRESS_Y_OFFSET 60 // Where the start of the first progress bar is
+  #define DISPLAY_PROGRESS_Y_STEP 35 // Step from start of one progress bar to the start of the next
+  #define DISPLAY_PROGRESS_HEIGHT 15 // Height of the progress bar
+  #define DISPLAY_PROGRESS_SPEED 2 // Speed at which the progress bar grows in pixels per percent
+#else // LOW_RES
+  #define DISPLAY_PROGRESS_X_TEXT 2
+  #define DISPLAY_PROGRESS_Y_TEXT 15
+  #define DISPLAY_PROGRESS_X_OFFSET 184
+  #define DISPLAY_PROGRESS_Y_OFFSET 29
+  #define DISPLAY_PROGRESS_Y_STEP 18
+  #define DISPLAY_PROGRESS_HEIGHT 8
+  #define DISPLAY_PROGRESS_SPEED 1
+#endif
 
 //--------------------------------------------------------------------------------------------------
 #endif // _MIDI_H

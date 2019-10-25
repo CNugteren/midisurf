@@ -39,7 +39,7 @@ short start_menu(OBJECT* background_menu, char *midi_file_path, char *midi_file_
   // Displays the textual game instructions
   OBJECT* bg_text;
   rsrc_gaddr(0, START, &bg_text);
-  object_set_offset(bg_text, 180, 100);
+  object_set_offset(bg_text, MENU_MAIN_X, MENU_MAIN_Y);
 
   objc_draw(bg_text, 0, 1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 

@@ -506,12 +506,12 @@ void draw_parsing_background(OBJECT* background, const struct track_chunk* track
   objc_draw(background, 0, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
   // Displays the static text
-  write_text(DISPLAY_PROGRESS_X_TEXT, 35, "Parsing tracks...");
+  write_text(DISPLAY_PROGRESS_X_TEXT, DISPLAY_PROGRESS_Y_TEXT, "Parsing tracks...");
   short track_id = 0;
   for (track_id = 0; track_id < num_tracks; ++track_id) {
     const short track_length = tracks[track_id].length;
     char track_info_string[18 + 2 + 5];
-    sprintf(track_info_string, "Track #%02d (length %d)", track_id, track_length);
+    sprintf(track_info_string, "Track %02d (len %d)", track_id, track_length);
     const short y_pos = track_id * DISPLAY_PROGRESS_Y_STEP + DISPLAY_PROGRESS_Y_OFFSET + 13;
     write_text(DISPLAY_PROGRESS_X_TEXT, y_pos, track_info_string);
   }
@@ -525,7 +525,9 @@ void draw_track_name(const short track_id, const __uint8_t* name, const short le
   track_name_string[i + 1] = '"';
   track_name_string[i + 2] = '\0';
   const short y_pos = track_id * DISPLAY_PROGRESS_Y_STEP + DISPLAY_PROGRESS_Y_OFFSET + 13;
-  write_text(DISPLAY_PROGRESS_X_NAME, y_pos, track_name_string);
+  #ifdef HIGH_RES
+    write_text(DISPLAY_PROGRESS_X_NAME, y_pos, track_name_string);
+  #endif
 }
 
 void draw_progress_bar(const short progress_percentage, const short track_id) {

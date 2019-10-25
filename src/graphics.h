@@ -35,10 +35,15 @@
 //--------------------------------------------------------------------------------------------------
 // GEM VDI graphics: elementary functions
 
-// Assumes high-resolution display (640x400) for now
-// TODO: Make this system dependent
-#define DISPLAY_HEIGHT 400
-#define DISPLAY_WIDTH 640
+// Monochrome (high-res)
+#ifdef HIGH_RES
+  #define DISPLAY_WIDTH 640
+  #define DISPLAY_HEIGHT 400
+// Colour screen (low-res)
+#else // LOW_RES
+  #define DISPLAY_WIDTH 320
+  #define DISPLAY_HEIGHT 200
+#endif
 
 void draw_circle(const short x, const short y, const short radius);
 

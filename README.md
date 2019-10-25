@@ -32,7 +32,7 @@ Limitations
 
 The game is currently limited in the following ways:
 
-* It only runs on an Atari ST with a high-resolution (640x400 black & white) screen
+* It is designed mainly for an Atari ST with a high-resolution (640x400 black & white) screen, although it can also be played with some limitations on a 320x200 low-resolution colour screen
 
 * Tunes are most recognizable with just the main Midi track and notes playing, so it is recommended to remove any background Midi tracks and supporting keys upfront, e.g. using a tool like [MidiEditor](https://www.midieditor.org/)
 
@@ -46,11 +46,13 @@ Compilation
 
 Midisurf can be cross-compiled on a modern UNIX/Windows system with the [freemint Atari-ST GCC compiler](https://github.com/freemint/m68k-atari-mint-gcc) as follows:
 
-    m68k-atari-mint-gcc src/*.c -o midisurf.prg -lgem
+    m68k-atari-mint-gcc src/*.c -DHIGH_RES -o midisurf.prg -lgem
 
 That however results in a relatively large binary (~160KB), so alternatively with [mfro0's libcmini](https://github.com/mfro0/libcmini) (v0.491 has bugs so use the master branch or a newer version when released) you can obtain a binary of around 35KB:
 
-    m68k-atari-mint-gcc -nostdlib $LIBCMINI/startup.o src/*.c -o midisurf.prg -s -L$LIBCMINI -lcmini -lgcc -lgem
+    m68k-atari-mint-gcc -nostdlib $LIBCMINI/startup.o src/*.c -DHIGH_RES -o midisurf.prg -s -L$LIBCMINI -lcmini -lgcc -lgem
+
+When running with a low-resolution colour screen, replace the above `-DHIGH_RES` with `-DLOW_RES`.
 
 When running it on the Atari ST or an emulator, make sure you run it as a GEM application rather than TOS (otherwise the mouse won't show).
 
@@ -63,7 +65,7 @@ Alternatively, for development and debugging purpose (to some extent), it can be
 
 For debugging purpose, Clang's address sanitizer can be used on a UNIX system to check for overflows and memory leaks by compiling and running as follows:
 
-    clang -g -fsanitize=address -fno-omit-frame-pointer -DUNIX src/*.c -o midisurf.unix && ./midisurf.unix && rm midisurf.unix
+    clang -g -fsanitize=address -fno-omit-frame-pointer -DUNIX src/*.c -DHIGH_RES -o midisurf.unix && ./midisurf.unix && rm midisurf.unix
 
 
 Running Midisurf on an emulator
@@ -71,8 +73,8 @@ Running Midisurf on an emulator
 
 If you don't own an Atari ST or just want to test the game first before you write it to a floppy disk, you can run Midisurf on an Atari ST emulator such as [Hatari](https://hatari.tuxfamily.org/). After setting up the emulator, select the high resolution screen (640x400), and then either:
 
-* Mount one of the Atari ST image releases (`mdsrf_X.Y.st`) as floppy A or B
+* Mount one of the Atari ST image releases (`mdsrf_X.Yh.st`) as floppy A or B
 
-* Mount the contents of one of the release archives (`mdsrf_X.Y.zip`) as a hard disk
+* Mount the contents of one of the release archives (`mdsrf_X.Yh.zip`) as a hard disk
 
 * Compile your own `midisurf.prg` from the repository and mount the folder as a hard disk along with the other files in this repository (at least *.bpm and *.rsc).
