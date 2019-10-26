@@ -1,8 +1,7 @@
 Midisurf
 ================
 
-Midisurf is an Audiosurf/GuitarHero-like game for the Atari ST based on Midi files. At the start of the game, a Midi file from disk has to be selected. This Midi file is being played on the Atari ST YT sound-chip, while the player of the game has to press keys on the keyboard at the right time to 'play along' the Midi track.
-
+Midisurf is an Audiosurf/GuitarHero-like game based on Midi files. It is created in 2019 for the 1985 Atari ST computer, and is written in C. At the start of the game, a Midi file from disk has to be selected. This Midi file is being played on the Atari ST YT sound-chip, while the player(s) of the game have to press keys on the keyboard at the right time to 'play along' the Midi track.
 
 Playing Midisurf
 -------------

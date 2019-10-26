@@ -31,11 +31,12 @@ do
 
     # The test audio
     cp -r testmidi ${RELEASE_NAME}/
-    rm -f ${RELEASE_NAME}/README.md
+    rm -f ${RELEASE_NAME}/testmidi/README.md
 
     # Some auxiliary files
     cp README.md ${RELEASE_NAME}/
     cp LICENSE ${RELEASE_NAME}/
+    touch ${RELEASE_NAME}/hiscores.txt
 
     # Creates a zip-archive from the new folder
     zip ${RELEASE_NAME}.zip ${RELEASE_NAME}/*

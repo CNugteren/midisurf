@@ -1,4 +1,5 @@
-Next version (under development)
+
+MidiSurf 1.2 (2019-10-25)
 - Fixed an issue with file-selection and a missing *.* on TOS < 1.04
 - Quick & dirty port of the game to work on a 320x200 low-res screen as well
 
