@@ -23,7 +23,7 @@ An example of what the game looks like:
 
 ![Midisurf gameplay example](docs/gameplay.png)
 
-Or watch the [Midisurf gameplay video](docs/gameplay.mp4).
+Or watch the [Midisurf gameplay video](docs/gameplay.mp4). You can also try out <a href=https://cnugteren.github.io/atari/index.html>Midisurf in the browser</a>, but it is without audio unfortunately.
 
 
 Limitations
