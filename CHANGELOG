@@ -1,5 +1,5 @@
 
-Development version
+MidiSurf 1.3 (2019-10-27)
 - Fixed a bug which caused the first two bits of 'register 7' of the audio chip being overwritten
 
 MidiSurf 1.2 (2019-10-25)
