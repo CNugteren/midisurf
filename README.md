@@ -37,8 +37,6 @@ The game is currently limited in the following ways:
 
 * Certain features of Midi tracks are not supported yet and parsing those tracks will result in an error
 
-* The Atari ST sometimes needs a reboot after the game is ended - unclear why this needed
-
 
 Compilation
 -------------
